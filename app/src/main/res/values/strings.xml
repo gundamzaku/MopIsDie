@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">里屋已完</string>
+    <string name="username">用户名</string>
+    <string name="password">密码</string>
+    <string name="login_button">我要登录</string>
+    <string name="action_settings">里屋已完</string>
+    <string name="title_activity_forum">帖子</string>
+
+    <string name="empty_username">请输入用户名</string>
+    <string name="empty_password">请输入用户密码</string>
+
+    <string name="net_error">登录网络异常，请稍候尝试</string>
+
+</resources>
