@@ -1,5 +1,6 @@
 package com.tantanwen.mopisdie;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +35,10 @@ public class main extends Activity {
         username = (EditText)findViewById(R.id.username);
         password = (EditText)findViewById(R.id.password);
         login_button = (Button)findViewById(R.id.login_button);
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
+        //actionBar.hide();
         //绑定事件
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
