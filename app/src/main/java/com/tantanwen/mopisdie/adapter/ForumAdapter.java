@@ -1,14 +1,19 @@
 package com.tantanwen.mopisdie.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.tantanwen.mopisdie.Forum;
 import com.tantanwen.mopisdie.R;
+import com.tantanwen.mopisdie.ViewTopic;
+import com.tantanwen.mopisdie.utils.Config;
 
 import org.w3c.dom.Text;
 
@@ -20,19 +25,20 @@ import java.util.ArrayList;
 public class ForumAdapter extends BaseAdapter {
 
     private final LayoutInflater myInflater;
-    public ArrayList<String> items = new ArrayList<String>();
-
+    public ArrayList<String[]> items = new ArrayList<String[]>();
+    private Context mContext;
     public ForumAdapter(Context c){
+
         myInflater = LayoutInflater.from(c);
+        mContext = c;
     }
 
-    public void setItems(ArrayList fromItems){
+    public void setItems(ArrayList<String[]> fromItems){
         items = fromItems;
     }
 
     @Override
     public int getCount() {
-        //System.out.println(items.size());
         return items.size();
     }
 
@@ -47,12 +53,21 @@ public class ForumAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         convertView = myInflater.inflate(R.layout.array_forum,null);
         TextView title = (TextView)convertView.findViewById(R.id.forum_item);
-        title.setText(Html.fromHtml(items.get(position)));
-
+        title.setText(Html.fromHtml(items.get(position)[1]));
+        title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.d(Config.TAG,items.get(position)[0]);
+                //跳新的页面
+                Intent list = new Intent(mContext,ViewTopic.class);
+                list.putExtra("tid",items.get(position)[0]);
+                mContext.startActivity(list);
+            }
+        });
         System.out.println(position);
         return convertView;
     }

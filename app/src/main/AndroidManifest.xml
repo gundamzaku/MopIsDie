@@ -22,6 +22,10 @@
             android:name=".Forum"
             android:label="@string/title_activity_forum" >
         </activity>
+        <activity
+            android:name=".ViewTopic"
+            android:label="@string/title_activity_view_topic" >
+        </activity>
     </application>
 
 </manifest>

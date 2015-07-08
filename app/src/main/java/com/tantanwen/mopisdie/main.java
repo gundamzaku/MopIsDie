@@ -24,13 +24,13 @@ public class main extends Activity {
     private EditText username;
     private EditText password;
     private Button login_button;
-    private Context mContent;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContent = this;
+        mContext = this;
         username = (EditText)findViewById(R.id.username);
         password = (EditText)findViewById(R.id.password);
         login_button = (Button)findViewById(R.id.login_button);
@@ -68,7 +68,7 @@ public class main extends Activity {
 
             switch(msg.what) {
                 case 1001:
-                    Intent list = new Intent(mContent,Forum.class);
+                    Intent list = new Intent(mContext,Forum.class);
                     startActivity(list);
                     finish();
                     break;

@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class Forum extends Activity {
 
-    private ArrayList<String> strs = new ArrayList<String>();
+    private ArrayList<String[]> strs = new ArrayList<String[]>();
     private ListView forumList;
     private Context mContext;
 
@@ -60,9 +60,9 @@ public class Forum extends Activity {
             Pattern p = Pattern.compile("<a href=\"viewtopic.asp\\?fid=1&tid=(.*?)\" title='(.*?)'>(.*?)</a><br />");
             Matcher m = p.matcher(string);
 
-            Log.d(Config.TAG, String.valueOf(m));
+            //Log.d(Config.TAG, String.valueOf(m));
             while (m.find()) {
-                strs.add(m.group(3));
+                strs.add(new String[]{m.group(1), m.group(3)});
             }
             mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
             /*

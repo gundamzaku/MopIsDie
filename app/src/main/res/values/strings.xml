@@ -10,5 +10,8 @@
     <string name="empty_password">请输入用户密码</string>
 
     <string name="net_error">登录网络异常，请稍候尝试</string>
+    <string name="title_activity_view_topic">ViewTopic</string>
+
+    <string name="hello_world">Hello world!</string>
 
 </resources>
