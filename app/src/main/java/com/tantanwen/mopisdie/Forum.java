@@ -1,13 +1,20 @@
 package com.tantanwen.mopisdie;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.tantanwen.mopisdie.adapter.ForumAdapter;
@@ -18,16 +25,41 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Forum extends Activity {
+public class Forum extends AppCompatActivity {
 
     private ArrayList<String[]> strs = new ArrayList<String[]>();
     private ListView forumList;
     private Context mContext;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum);
+
+        initToolBar();
+        initDrawer();
+
+        ListView mMenuListView = (ListView) findViewById(R.id.menu_list);
+        String[] mMenuTitles = getResources().getStringArray(R.array.array_left_menu_forum);
+        mMenuListView.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, mMenuTitles));
+        mMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println(position);
+                switch (position){
+                    case 0:
+                        System.out.println("发贴");
+                        break;
+                    case 1:
+                        System.out.println("传呼");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
 
         mContext = this;
         //启动线程
@@ -37,6 +69,22 @@ public class Forum extends Activity {
         //httpRequest.setHeader("Cookie", "JSESSIONID=" + COOKIE);
     }
 
+    private void initToolBar(){
+
+        toolbar = (Toolbar)findViewById(R.id.id_toolbar);
+        toolbar.setTitle(R.string.title_activity_forum);
+        setSupportActionBar(toolbar);
+        //toolbar.setNavigationIcon(R.drawable.logo);
+        //toolbar.setLogo(R.drawable.ic_favorite_outline_white_24dp);
+    }
+    private void initDrawer(){
+
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
+
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open, R.string.close);
+        mDrawerToggle.syncState();
+        mDrawerLayout.setDrawerListener(mDrawerToggle);//设置监听器
+    }
     private Handler mHandler = new Handler() {
         public void handleMessage (Message msg) {//此方法在ui线程运行
             switch(msg.what) {

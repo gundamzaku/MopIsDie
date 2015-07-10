@@ -1,17 +1,28 @@
 package com.tantanwen.mopisdie;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
@@ -20,24 +31,63 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ViewTopic extends Activity {
+public class ViewTopic extends AppCompatActivity {
 
     private String tid;
     private String string;
+    private Toolbar toolbar;
+    private Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_topic);
         Intent intent = getIntent();
         tid = intent.getStringExtra("tid");
-        System.out.println("到这个页面我的tid是："+tid);
+        //System.out.println("到这个页面我的tid是："+tid);
+        mContext = this;
 
+        initToolBar();
+        initDrawer();
+        ListView mMenuListView = (ListView) findViewById(R.id.menu_list);
+        String[] mMenuTitles = getResources().getStringArray(R.array.array_left_menu_topic);
+        mMenuListView.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, mMenuTitles));
+        mMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println(position);
+                switch (position){
+                    case 0:
+                        LayoutInflater inflater = getLayoutInflater();
+                        View layout = inflater.inflate(R.layout.activity_reply,(ViewGroup) findViewById(R.id.dialog));
+                        new AlertDialog.Builder(mContext).setTitle("我要回复").setView(layout).setPositiveButton("确定", null).setNegativeButton("取消", null).show();
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
         //启动线程
         MyThread myThread = new MyThread();
         Thread td1 = new Thread(myThread);
         td1.start();
     }
+    private void initToolBar(){
 
+        toolbar = (Toolbar)findViewById(R.id.id_toolbar);
+        toolbar.setTitle(R.string.title_activity_forum);
+        setSupportActionBar(toolbar);
+    }
+    private void initDrawer(){
+
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
+
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open, R.string.close);
+        mDrawerToggle.syncState();
+        mDrawerLayout.setDrawerListener(mDrawerToggle);//设置监听器
+    }
     private Handler mHandler = new Handler() {
         @JavascriptInterface
         public void handleMessage (Message msg) {//此方法在ui线程运行
@@ -56,7 +106,7 @@ public class ViewTopic extends Activity {
                     //System.out.println(m.find());
                     //System.out.println(m.group(2));
                     if(m.find() == true){
-                        setTitle(m.group(2));
+                        toolbar.setTitle(m.group(2));
                     }
 
                     p = Pattern.compile("<hr color=\"black\" />([\\s\\S]*?)<hr color=\"black\" />");

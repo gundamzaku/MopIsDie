@@ -1,26 +1,23 @@
 package com.tantanwen.mopisdie;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 
-import java.io.IOException;
-
-public class main extends Activity {
+public class main extends AppCompatActivity {
 
     private EditText username;
     private EditText password;
@@ -31,14 +28,14 @@ public class main extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mContext = this;
         username = (EditText)findViewById(R.id.username);
         password = (EditText)findViewById(R.id.password);
         login_button = (Button)findViewById(R.id.login_button);
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
-        //actionBar.hide();
+        initToolBar();
+
         //绑定事件
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +43,15 @@ public class main extends Activity {
                 login();
             }
         });
+    }
+
+    private void initToolBar(){
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.id_toolbar);
+        toolbar.setTitle(R.string.app_slogan);
+        setSupportActionBar(toolbar);
+        //toolbar.setNavigationIcon(R.drawable.logo);
+        toolbar.setLogo(R.drawable.ic_favorite_outline_white_24dp);
     }
 
     private void login(){

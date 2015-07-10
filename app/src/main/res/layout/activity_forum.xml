@@ -1,17 +1,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="4dp"
     android:orientation="vertical"
     android:background="@drawable/repeat_bg"
     android:tileMode="repeat"
     android:baselineAligned="false">
 
-    <ListView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/forum_list"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+    <include android:id="@+id/id_toolbar" layout="@layout/inc_toolbar" />
+
+    <android.support.v4.widget.DrawerLayout
+        android:layout_below="@id/id_toolbar"
+        android:id="@+id/drawerlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!--主布局-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#fff">
+            <ListView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/forum_list"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+
+        </LinearLayout>
+        <!--侧滑菜单//drawer view必须指定android:layout_gravity属性，如果值为“start”，会根据系统的语言顺序自动决定从左滑还是从右滑-->
+        <LinearLayout
+            android:layout_width="160dp"
+            android:layout_height="match_parent"
+            android:background="#009688"
+            android:layout_gravity="start"
+            android:alpha="0.7">
+            <ListView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/menu_list"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+        </LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+
 
 </LinearLayout>

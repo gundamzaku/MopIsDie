@@ -1,3 +1,4 @@
+//作废
 package com.tantanwen.mopisdie.adapter;
 
 import android.content.Context;
@@ -5,9 +6,6 @@ import android.view.ActionProvider;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-
-import com.tantanwen.mopisdie.R;
-
 
 public class MyActionProvider extends ActionProvider {
 
@@ -24,20 +22,30 @@ public class MyActionProvider extends ActionProvider {
     public void onPrepareSubMenu(SubMenu subMenu) {
 
         subMenu.clear();
-        subMenu.add("sub item 1").setIcon(R.drawable.icon)
-                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        return true;
-                    }
-                });
-        subMenu.add("sub item 2").setIcon(R.drawable.icon)
-                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        return false;
-                    }
-                });
+        subMenu.add("发帖").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return true;
+            }
+        });
+        subMenu.add("短消息").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return true;
+            }
+        });
+        subMenu.add("我的信息").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return true;
+            }
+        });
+        subMenu.add("帮助").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return true;
+            }
+        });
     }
 
     @Override

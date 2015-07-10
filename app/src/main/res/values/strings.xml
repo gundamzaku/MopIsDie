@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">里屋已完</string>
+    <string name="app_name">浮云村</string>
+    <string name="app_slogan">里屋已完，各自安好</string>
     <string name="username">用户名</string>
     <string name="password">密码</string>
-    <string name="login_button">我要登录</string>
+    <string name="login_button">让我登一下呗</string>
     <string name="action_settings">里屋已完</string>
     <string name="title_activity_forum">帖子</string>
 
@@ -12,6 +13,15 @@
     <string name="net_error">登录网络异常，请稍候尝试</string>
     <string name="title_activity_view_topic">ViewTopic</string>
 
-    <string name="hello_world">Hello world!</string>
-
+    <string name="open">打开</string>
+    <string name="close">关闭</string>
+    <string-array name="array_left_menu_forum">
+        <item id="1">发帖</item>
+        <item id="2">传呼</item>
+        <item id="3">刷新</item>
+    </string-array>
+    <string-array name="array_left_menu_topic">
+        <item id="1">回复</item>
+        <item id="1">刷新</item>
+    </string-array>
 </resources>
