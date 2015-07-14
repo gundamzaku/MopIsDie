@@ -27,4 +27,5 @@
     <string name="title_activity_reply">回帖</string>
     <string name="submit_button">提交</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_post">发帖</string>
 </resources>

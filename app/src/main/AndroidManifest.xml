@@ -12,6 +12,11 @@
         <activity
             android:name=".main"
             android:logo="@drawable/logo" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Forum"
@@ -24,10 +29,11 @@
         <activity
             android:name=".Reply"
             android:label="@string/title_activity_reply" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Post"
+            android:label="@string/title_activity_post" >
+
         </activity>
     </application>
 

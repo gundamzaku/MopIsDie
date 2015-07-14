@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="types">
+        <item value="0">普通帖</item>
+        <item value="1">转载帖</item>
+        <item value="2">经典内容下载</item>
+        <item value="3">自创文学作品</item>
+        <item value="4">集体活动,聚会召集</item>
+        <item value="5">实用知识</item>
+    </string-array>
+
+    <string-array name="price">
+        <item value="0">0</item>
+        <item value="5">5</item>
+        <item value="10">10</item>
+        <item value="15">15</item>
+        <item value="30">30</item>
+        <item value="50">50</item>
+        <item value="80">80</item>
+        <item value="100">100</item>
+        <item value="150">150</item>
+        <item value="200">200</item>
+        <item value="250">250</item>
+        <item value="300">300</item>
+        <item value="500">500</item>
+        <item value="800">800</item>
+        <item value="1000">1000</item>
+        <item value="1200">1200</item>
+        <item value="1500">1500</item>
+        <item value="1800">1800</item>
+        <item value="2000">2000</item>
+        <item value="2500">2500</item>
+        <item value="5000">5000</item>
+        <item value="9999">9999</item>
+        <item value="100000">100000</item>
+        <item value="1000000">1000000</item>
+    </string-array>
+</resources>

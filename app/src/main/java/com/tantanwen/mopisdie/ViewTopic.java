@@ -26,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
+import com.tantanwen.mopisdie.utils.HTMLSpirit;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -37,6 +38,7 @@ public class ViewTopic extends AppCompatActivity {
     private String string;
     private Toolbar toolbar;
     private Context mContext;
+    private String fromJs_pid,fromJs_f;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -56,13 +58,14 @@ public class ViewTopic extends AppCompatActivity {
         mMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println(position);
+
                 switch (position){
                     case 0:
-                        LayoutInflater inflater = getLayoutInflater();
-                        View layout = inflater.inflate(R.layout.activity_reply,(ViewGroup) findViewById(R.id.dialog));
-                        new AlertDialog.Builder(mContext).setTitle("我要回复").setView(layout).setPositiveButton("确定", null).setNegativeButton("取消", null).show();
-
+                        Intent list = new Intent(mContext,Reply.class);
+                        mContext.startActivity(list);
+                        //LayoutInflater inflater = getLayoutInflater();
+                        //View layout = inflater.inflate(R.layout.activity_reply,(ViewGroup) findViewById(R.id.dialog));
+                        //new AlertDialog.Builder(mContext).setTitle("我要回复").setView(layout).setPositiveButton("确定", null).setNegativeButton("取消", null).show();
                         break;
                     default:
                         break;
@@ -106,7 +109,7 @@ public class ViewTopic extends AppCompatActivity {
                     //System.out.println(m.find());
                     //System.out.println(m.group(2));
                     if(m.find() == true){
-                        toolbar.setTitle(m.group(2));
+                        toolbar.setTitle(HTMLSpirit.delHTMLTag(m.group(2)));
                     }
 
                     p = Pattern.compile("<hr color=\"black\" />([\\s\\S]*?)<hr color=\"black\" />");
@@ -130,7 +133,20 @@ public class ViewTopic extends AppCompatActivity {
 
                     webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
                     //webView.loadUrl("javascript:alert(injectedObject.toString())");
-                    Log.d(Config.TAG,"结束");
+                    //Log.d(Config.TAG,"结束");
+                    break;
+                case 2001:
+                    //System.out.println(string);
+                    //<script type="text/javascript">$('quot_message').value=''</script>
+                    p = Pattern.compile("<script type=\"text/javascript\">\\$\\('quot_message'\\).value='([\\s\\S]*?)'</script>");
+                    m = p.matcher(string);
+                    if(m.find() == true){
+                        String quote = m.group(1);
+                        //页面跳转，并把值带过去
+                        Intent list = new Intent(mContext,Reply.class);
+                        list.putExtra("quote",quote);
+                        mContext.startActivity(list);
+                    }
                     break;
             }
         }
@@ -140,7 +156,7 @@ public class ViewTopic extends AppCompatActivity {
         @JavascriptInterface
         public boolean shows3(Objects href) {
 
-            Toast.makeText(getApplicationContext(), "这有啥好看的？", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "这有啥好看的？看自己小鸡鸡去。", Toast.LENGTH_SHORT).show();
             return false;
         }
         @JavascriptInterface
@@ -152,7 +168,15 @@ public class ViewTopic extends AppCompatActivity {
         @JavascriptInterface
         public void showquot(String pid,String f) {
 
-            Toast.makeText(getApplicationContext(), "引用", Toast.LENGTH_SHORT).show();
+            fromJs_pid = pid;
+            fromJs_f = f;
+            //启动线程
+            CpThread cpThread = new CpThread();
+            Thread td1 = new Thread(cpThread);
+            td1.start();
+            //组织成url
+            //http://fuyuncun.com/topiccp.asp?action=ajaxquot&pid=129518&f=1
+           //Toast.makeText(getApplicationContext(), "引用", Toast.LENGTH_SHORT).show();
 
         }
     }
@@ -165,6 +189,18 @@ public class ViewTopic extends AppCompatActivity {
             string = Url.getInstance().doGet();
             //需要解析是否是登录成功
             mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
+            //Log.d(Config.TAG,""+string);
+        }
+    };
+
+    class CpThread implements Runnable{
+
+        public void run(){
+
+            Url.getInstance().setUrl(Config.VIEW_TOPIC_CP_URL+"&pid="+fromJs_pid+"&f="+fromJs_f);
+            string = Url.getInstance().doGet();
+            //需要解析是否是登录成功
+            mHandler.obtainMessage(Config.SUCCESS_02).sendToTarget();
             //Log.d(Config.TAG,""+string);
         }
     };

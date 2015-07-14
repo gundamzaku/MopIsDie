@@ -1,6 +1,7 @@
 package com.tantanwen.mopisdie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,6 +37,7 @@ public class Forum extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum);
+        mContext = this;
 
         initToolBar();
         initDrawer();
@@ -50,7 +52,8 @@ public class Forum extends AppCompatActivity {
                 System.out.println(position);
                 switch (position){
                     case 0:
-                        System.out.println("发贴");
+                        Intent list = new Intent(mContext,Post.class);
+                        mContext.startActivity(list);
                         break;
                     case 1:
                         System.out.println("传呼");
@@ -61,7 +64,6 @@ public class Forum extends AppCompatActivity {
             }
         });
 
-        mContext = this;
         //启动线程
         MyThread myThread = new MyThread();
         Thread td1 = new Thread(myThread);

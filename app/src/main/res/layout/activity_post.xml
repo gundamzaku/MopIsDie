@@ -1,8 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent" android:layout_height="fill_parent"
+    android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical">
+
     <include android:id="@+id/id_toolbar" layout="@layout/inc_toolbar" />
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="帖子标题"
+            android:ems="10"
+            android:id="@+id/title"
+            android:layout_gravity="center_horizontal"
+            />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/types"
+            android:entries="@array/types"
+        />
+    </TableRow>
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -65,7 +92,7 @@
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                 android:id="@+id/face1"
+                android:id="@+id/face1"
                 android:layout_weight="1" />
             <Spinner
                 android:layout_width="match_parent"
@@ -114,7 +141,7 @@
                 android:text="签名"
                 android:id="@+id/sig" />
         </TableRow>
-        </TableLayout>
+    </TableLayout>
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -125,30 +152,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="送楼主MP" />
-            <EditText
-                android:layout_width="match_parent"
+                android:text="看帖最低MP" />
+            <Spinner
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:inputType="numberSigned"
-                android:ems="10"
-                android:id="@+id/editText2"
-                 />
-        </TableRow>
-        <TableRow
-            android:layout_width="300dp"
-            android:layout_height="match_parent">
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="清空引用"
-                android:id="@+id/clearQuoteButton"
-                android:layout_gravity="center_horizontal" />
-            <WebView
-                android:layout_width="fill_parent"
-                android:layout_height="60dp"
-                android:id="@+id/webQuote"
-                android:layout_weight="1" />
+                android:id="@+id/price"
+                android:entries="@array/price"
+                />
         </TableRow>
     </TableLayout>
 
