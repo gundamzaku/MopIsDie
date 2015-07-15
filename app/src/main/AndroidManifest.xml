@@ -33,7 +33,10 @@
         <activity
             android:name=".Post"
             android:label="@string/title_activity_post" >
-
+        </activity>
+        <activity
+            android:name=".Pm"
+            android:label="@string/title_activity_pm" >
         </activity>
     </application>
 

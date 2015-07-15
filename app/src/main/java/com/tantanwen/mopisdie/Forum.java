@@ -50,13 +50,15 @@ public class Forum extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 System.out.println(position);
+                Intent list;
                 switch (position){
                     case 0:
-                        Intent list = new Intent(mContext,Post.class);
+                        list = new Intent(mContext,Post.class);
                         mContext.startActivity(list);
                         break;
                     case 1:
-                        System.out.println("传呼");
+                        list = new Intent(mContext,Pm.class);
+                        mContext.startActivity(list);
                         break;
                     default:
                         break;
