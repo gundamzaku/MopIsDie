@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- 设置的类别 -->
+    <PreferenceCategory
+        android:key="load"
+        android:summary="我的设置"
+        android:title="呵…呵呵……呵呵呵呵呵">
+        <CheckBoxPreference
+            android:key="load_images_nowifi"
+            android:summary="是否充许在非WIFI状态下显示图片"
+            android:title="充许加载"
+            android:checked="true"/>
+    </PreferenceCategory>
+    <!--
+    <PreferenceCategory
+        android:key="mymsg"
+        android:summary="个人信息"
+        android:title="个人信息">
+        <EditTextPreference
+            android:key="myname"
+            android:title="请输入真实姓名"
+            android:summary="姓名"/>
+    </PreferenceCategory>
+    -->
+</PreferenceScreen>

@@ -38,6 +38,12 @@
             android:name=".Pm"
             android:label="@string/title_activity_pm" >
         </activity>
+        <activity
+            android:name=".PmMessage"
+            android:label="@string/title_activity_pm_message" >
+        </activity>
+        <activity android:name=".Prefs"
+            android:label="@string/settings_title"></activity>
     </application>
 
 </manifest>

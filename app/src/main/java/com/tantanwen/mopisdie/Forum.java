@@ -1,5 +1,7 @@
 package com.tantanwen.mopisdie;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -59,6 +61,19 @@ public class Forum extends AppCompatActivity {
                     case 1:
                         list = new Intent(mContext,Pm.class);
                         mContext.startActivity(list);
+                        break;
+                    case 2: //设置
+                        //加载PrefFragment
+                        list = new Intent(mContext,Prefs.class);
+                        mContext.startActivity(list);
+                        /*
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        PrefFragment prefFragment = new PrefFragment();
+                        transaction.add(android.R.id.content, prefFragment);
+                        //getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragement()).commit();
+                        transaction.commit();
+                        */
                         break;
                     default:
                         break;

@@ -18,7 +18,8 @@
     <string-array name="array_left_menu_forum">
         <item id="1">发帖</item>
         <item id="2">传呼</item>
-        <item id="3">刷新</item>
+        <item id="3">设置</item>
+        <item id="4">刷新</item>
     </string-array>
     <string-array name="array_left_menu_topic">
         <item id="1">回复</item>
@@ -26,7 +27,11 @@
     </string-array>
     <string name="title_activity_reply">回帖</string>
     <string name="submit_button">提交</string>
+    <string name="send_button">发送</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_post">发帖</string>
     <string name="title_activity_pm">短消息</string>
+    <string name="title_activity_pm_message">回复短消息</string>
+    <string name="settings_title">设置</string>
+
 </resources>
