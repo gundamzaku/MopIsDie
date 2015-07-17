@@ -12,35 +12,49 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="center_horizontal">
-
         <LinearLayout
+            android:id="@+id/ready_layout"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical">
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/login_layout"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="248dp"
             android:layout_gravity="center_vertical">
 
             <AutoCompleteTextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="@string/username"
                 android:id="@+id/username"
                 android:layout_gravity="center_horizontal" />
 
             <EditText
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:hint="@string/password"
                 android:ems="10"
                 android:id="@+id/password"
                 android:layout_gravity="center_horizontal" />
-
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save_login"
+                android:id="@+id/save_login"
+                android:layout_gravity="center_horizontal" />
             <Button
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/login_button"
                 android:id="@+id/login_button"
                 android:layout_gravity="center_horizontal" />
+
         </LinearLayout>
     </LinearLayout>
 

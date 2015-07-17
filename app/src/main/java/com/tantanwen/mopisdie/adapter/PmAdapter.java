@@ -12,9 +12,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.tantanwen.mopisdie.PmMessage;
 import com.tantanwen.mopisdie.R;
 import com.tantanwen.mopisdie.ViewTopic;
 import com.tantanwen.mopisdie.utils.Config;
@@ -73,17 +75,46 @@ public class PmAdapter extends BaseAdapter {
         TextView content = (TextView)convertView.findViewById(R.id.pm_content);
         content.setText(Html.fromHtml(items.get(position).getContent()));
 
+        TextView re = (TextView)convertView.findViewById(R.id.pm_re);
+        re.setText(Html.fromHtml(items.get(position).getRe()));
+
+        ImageView pmSendView = (ImageView)convertView.findViewById(R.id.pm_send_view);
+        pmSendView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent list = new Intent(mContext,PmMessage.class);
+                list.putExtra("userNick",items.get(position).getSendUserNick());
+                list.putExtra("re", items.get(position).getRe());
+                list.putExtra("content", items.get(position).getContent());
+                list.putExtra("pmid", items.get(position).getPmid());
+                list.putExtra("sendTime", items.get(position).getSendTime());
+                mContext.startActivity(list);
+            }
+        });
+
         final LinearLayout mContent = (LinearLayout)convertView.findViewById(R.id.lay_content);
+        final LinearLayout mRe = (LinearLayout)convertView.findViewById(R.id.lay_re);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int visible = mContent.getVisibility();
-                System.out.println(visible);
+
+                int visible;
+                visible = mContent.getVisibility();
                 if (visible == 0) {
                     mContent.setVisibility(View.GONE);
                 }else {
                     mContent.setVisibility(View.VISIBLE);
+                }
+                //回复
+                TextView pmRe = (TextView)mRe.findViewById(R.id.pm_re);
+                if(pmRe.getText().length() > 0) {
+                    visible = mRe.getVisibility();
+                    if (visible == 0) {
+                        mRe.setVisibility(View.GONE);
+                    } else {
+                        mRe.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         });

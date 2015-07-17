@@ -12,6 +12,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
@@ -32,6 +33,7 @@ public class Url {
     private DefaultHttpClient httpClient;
     private HttpResponse httpResponse;
     private String uriApi;
+    private HttpParams httpParams;
 
     private static Url helper = null;
 
@@ -43,19 +45,24 @@ public class Url {
     }
 
     public Url(){
-        HttpParams params = new BasicHttpParams();
-        httpClient = new DefaultHttpClient(params);
+        httpParams = new BasicHttpParams();
+        //设置超时时间
+        HttpConnectionParams.setConnectionTimeout(httpParams,15000);
+        HttpConnectionParams.setSoTimeout(httpParams,15000);
+        httpClient = new DefaultHttpClient(httpParams);
         cookieStore = new BasicCookieStore();
     }
 
     public void setUrl(String url){
         //清除
-        //clearParameter();
+        if(params.size()>0) {
+            clearParameter();
+        }
         uriApi = url;
     }
 
     public void clearParameter(){
-        params = null;
+        params.clear();
     }
     public void addParameter(String name,String value){
         params.add(new BasicNameValuePair(name, value));
@@ -68,6 +75,7 @@ public class Url {
         for (int i = 0; i < cookieStore.getCookies().size(); i++) {
             //httpGet.setHeader(cookieStore.getCookies().get(i).getName(),cookieStore.getCookies().get(i).getValue());
         }
+
         try {
             httpResponse = httpClient.execute(httpGet);
             if(httpResponse.getStatusLine().getStatusCode() == 200){

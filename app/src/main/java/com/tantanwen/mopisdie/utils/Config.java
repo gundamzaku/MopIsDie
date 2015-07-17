@@ -16,4 +16,7 @@ public class Config {
     //定义成功的操作符
     public static int SUCCESS       = 1001;
     public static int SUCCESS_02    = 2001;
+    public static int FAILURE               = 9999;
+    public static int FAILURE_LOGIN_INFO       = 1002;
+    public static int FAILURE_NET_ERROR       = 1003;
 }

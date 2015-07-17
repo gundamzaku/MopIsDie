@@ -10,7 +10,7 @@
         android:label="@string/app_slogan"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".main"
+            android:name=".Main"
             android:logo="@drawable/logo" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

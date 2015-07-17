@@ -1,5 +1,6 @@
 package com.tantanwen.mopisdie;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -26,6 +27,7 @@ public class PmMessage extends AppCompatActivity {
     //聊天的内容
     private List<PmMessageContainer> mDataArrays = new ArrayList<PmMessageContainer>();
 
+    /*
     private String[] msgArray = new String[]{"  孩子们，要好好学习，天天向上！要好好听课，不要翘课！不要挂科，多拿奖学金！三等奖学金的争取拿二等，二等的争取拿一等，一等的争取拿励志！",
             "姚妈妈还有什么吩咐...",
             "还有，明天早上记得跑操啊，不来的就扣德育分！",
@@ -39,12 +41,34 @@ public class PmMessage extends AppCompatActivity {
             "2012-09-01 18:11", "2012-09-01 18:20",
             "2012-09-01 18:30", "2012-09-01 18:35",
             "2012-09-01 18:40", "2012-09-01 18:50"};
-    private final static int COUNT = 8;
+    */
+
+    private String[] msgArray;
+    private String[] dataArray;
+
+    private String userNick;
+    private String re;
+    private String content;
+    private int pmid;
+    private String sendTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pm_message);
+
+        Intent intent =getIntent();
+
+        userNick    = intent.getStringExtra("userNick");
+        re           = intent.getStringExtra("re");
+        content     = intent.getStringExtra("content");
+        pmid         = intent.getIntExtra("pmid", 0);
+        sendTime    = intent.getStringExtra("sendTime");
+        System.out.println(userNick);
+        System.out.println(re);
+        System.out.println(content);
+        System.out.println(pmid);
+        System.out.println(sendTime);
 
         initView();
         initData();
@@ -63,30 +87,39 @@ public class PmMessage extends AppCompatActivity {
         });
         mEditTextContent = (EditText) findViewById(R.id.et_sendmessage);
     }
+
     //初始化要显示的数据
     private void initData() {
-        for(int i = 0; i < COUNT; i++) {
-            PmMessageContainer entity = new PmMessageContainer();
-            entity.setDate(dataArray[i]);
-            if (i % 2 == 0) {
-                entity.setName("姚妈妈");
-                entity.setMsgType(true);
-            }else{
-                entity.setName("Shamoo");
-                entity.setMsgType(false);
-            }
 
-            entity.setText(msgArray[i]);
+        PmMessageContainer entity;
+
+        if(re.length()>0){
+            entity = new PmMessageContainer();
+            entity.setDate(sendTime);
+            entity.setText(re);
+            entity.setName("你自己");
+            entity.setMsgType(false);
             mDataArrays.add(entity);
         }
+
+        if(content.length()>0){
+            entity = new PmMessageContainer();
+            entity.setDate(sendTime);
+            entity.setText(content);
+            entity.setName(userNick);
+            entity.setMsgType(true);
+            mDataArrays.add(entity);
+        }
+
         mAdapter = new PmMessageAdapter(this, mDataArrays);
         mListView.setAdapter(mAdapter);
+
     }
-    private void send()
-    {
+
+    private void send(){
+
         String contString = mEditTextContent.getText().toString();
-        if (contString.length() > 0)
-        {
+        if (contString.length() > 0) {
             PmMessageContainer entity = new PmMessageContainer();
             entity.setDate(Utils.getDate());
             entity.setName("");

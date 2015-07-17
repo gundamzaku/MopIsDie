@@ -75,6 +75,14 @@ public class Forum extends AppCompatActivity {
                         transaction.commit();
                         */
                         break;
+                    case 3:
+                        break;
+                    case 4:
+                        finish();
+                        break;
+                    case 5:
+                        finish();
+                        break;
                     default:
                         break;
                 }

@@ -86,6 +86,13 @@ public class Pm extends AppCompatActivity {
             m = p.matcher(string);
             while (m.find()) {
                 PmContainer pmContainer = new PmContainer();
+
+                pmContainer.setSendUserNick("");
+                pmContainer.setSendTime("");
+                pmContainer.setPmid(0);
+                pmContainer.setRe("");
+                pmContainer.setContent("");
+
                 //开始截取数据
                 p = Pattern.compile("<span class=\"pink\">(.*?)</span>给您发送的信息 【(.*?)】【<a href=\"\\?pmid=(.*?)&action=save\">");
                 mc = p.matcher(m.group());
@@ -100,6 +107,7 @@ public class Pm extends AppCompatActivity {
                     pmContainer.setSendTime(mc.group(2));
                     pmContainer.setPmid(Integer.parseInt(mc.group(3)));
                 }
+
                 p = Pattern.compile("<span class=\"grey\">([\\s\\S]*?)</span>");
                 mc = p.matcher(m.group());
                 if(mc.find() == true){

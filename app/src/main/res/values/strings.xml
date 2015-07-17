@@ -4,13 +4,15 @@
     <string name="username">用户名</string>
     <string name="password">密码</string>
     <string name="login_button">让我登一下呗</string>
+    <string name="save_login">记住密码</string>
     <string name="action_settings">里屋已完</string>
     <string name="title_activity_forum">帖子</string>
-
+    <string name="login_error">您登录失败了，请重新尝试</string>
+    <string name="login_info_error">该用户已被占用或者密码输入错误。您最多有……嗯，几次尝试吧。</string>
     <string name="empty_username">请输入用户名</string>
     <string name="empty_password">请输入用户密码</string>
 
-    <string name="net_error">登录网络异常，请稍候尝试</string>
+    <string name="net_error">服务器抽疯了，一会再试下吧</string>
     <string name="title_activity_view_topic">ViewTopic</string>
 
     <string name="open">打开</string>
@@ -20,6 +22,8 @@
         <item id="2">传呼</item>
         <item id="3">设置</item>
         <item id="4">刷新</item>
+        <item id="5">注销</item>
+        <item id="6">退出</item>
     </string-array>
     <string-array name="array_left_menu_topic">
         <item id="1">回复</item>

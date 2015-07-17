@@ -1,6 +1,7 @@
 package com.tantanwen.mopisdie.adapter;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,6 @@ public class PmMessageAdapter extends BaseAdapter {
         int IMVT_TO_MSG = 1;
     }
 
-    private static final String TAG = PmMessageAdapter.class.getSimpleName();
     private List<PmMessageContainer> data;
     private Context context;
     private LayoutInflater mInflater;
@@ -97,7 +97,7 @@ public class PmMessageAdapter extends BaseAdapter {
         }
         viewHolder.tvSendTime.setText(entity.getDate());
         viewHolder.tvUserName.setText(entity.getName());
-        viewHolder.tvContent.setText(entity.getText());
+        viewHolder.tvContent.setText(Html.fromHtml(entity.getText()));
 
         return convertView;
     }

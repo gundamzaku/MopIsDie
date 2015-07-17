@@ -26,7 +26,7 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="4" />
         <ImageView
-            android:id="@+id/iv_system_right"
+            android:id="@+id/pm_send_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -34,6 +34,22 @@
             android:layout_marginRight="10dp"
             android:src="@drawable/mail_reply"
             android:layout_weight="5" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/lay_re"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@color/material_pink_50"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="10dp"
+            android:id="@+id/pm_re"
+            />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/lay_content"
