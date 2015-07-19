@@ -15,10 +15,11 @@
         android:layout_height="match_parent">
         <!--主布局-->
         <LinearLayout
+            android:id="@+id/forum_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#fff">
-            <ListView
+            <com.tantanwen.mopisdie.widget.ScrollListView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/forum_list"

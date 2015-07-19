@@ -19,7 +19,9 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by gundamzaku on 2015/7/6.
@@ -104,13 +106,24 @@ public class Url {
             return "net_error";
         }
 
-        List<Cookie> cookies = httpClient.getCookieStore().getCookies();
-
-        for (int i = 0; i < cookies.size(); i++) {
-            //System.out.println("Local cookie: " + cookies.get(i));
-            cookieStore.addCookie(cookies.get(i));
-            //cookieStore.addCookie(cookies.get(i).getName(),cookies.get(i).getValue());
-        }
         return result;
+    }
+
+    public void setCookieStore(){
+
+        List<Cookie> cookies = httpClient.getCookieStore().getCookies();
+        for (int i = 0; i < cookies.size(); i++) {
+            cookieStore.addCookie(cookies.get(i));
+        }
+    }
+
+    public Map getCookieStore(){
+        List<Cookie> cookiesList = cookieStore.getCookies();
+        Map map = new HashMap();
+        //cookiesList.get(i).getName()
+        for (int i = 0;i<cookiesList.size();i++){
+           map.put(cookiesList.get(i).getName(),cookiesList.get(i));
+        }
+        return map;
     }
 }

@@ -1,6 +1,9 @@
 package com.tantanwen.mopisdie.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by gundamzaku on 2015/7/16.
@@ -18,5 +21,14 @@ public class Utils {
         StringBuffer sbBuffer = new StringBuffer();
         sbBuffer.append(year + "-" + month + "-" + day + " " + hour + ":" + mins);
         return sbBuffer.toString();
+    }
+    public static String getCurrentTime(String format) {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+        String currentTime = sdf.format(date);
+        return currentTime;
+    }
+    public static String getCurrentTime() {
+        return getCurrentTime("yyyy-MM-dd  HH:mm:ss");
     }
 }

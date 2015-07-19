@@ -13,9 +13,6 @@ import android.widget.TextView;
 import com.tantanwen.mopisdie.Forum;
 import com.tantanwen.mopisdie.R;
 import com.tantanwen.mopisdie.ViewTopic;
-import com.tantanwen.mopisdie.utils.Config;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -27,6 +24,7 @@ public class ForumAdapter extends BaseAdapter {
     private final LayoutInflater myInflater;
     public ArrayList<String[]> items = new ArrayList<String[]>();
     private Context mContext;
+
     public ForumAdapter(Context c){
 
         myInflater = LayoutInflater.from(c);
@@ -34,7 +32,7 @@ public class ForumAdapter extends BaseAdapter {
     }
 
     public void setItems(ArrayList<String[]> fromItems){
-        items = fromItems;
+        items = (ArrayList<String[]>) fromItems.clone();
     }
 
     @Override
@@ -58,6 +56,7 @@ public class ForumAdapter extends BaseAdapter {
         convertView = myInflater.inflate(R.layout.array_forum,null);
         TextView title = (TextView)convertView.findViewById(R.id.forum_item);
         title.setText(Html.fromHtml(items.get(position)[1]));
+
         title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,7 +67,7 @@ public class ForumAdapter extends BaseAdapter {
                 mContext.startActivity(list);
             }
         });
-        System.out.println(position);
+        //System.out.println(position);
         return convertView;
     }
 }

@@ -2,46 +2,95 @@ package com.tantanwen.mopisdie;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.tantanwen.mopisdie.http.Url;
+import com.tantanwen.mopisdie.utils.AESCoder;
 import com.tantanwen.mopisdie.utils.Config;
+
+import org.apache.http.client.CookieStore;
+import org.apache.http.cookie.Cookie;
+
+import java.util.List;
+import java.util.Map;
 
 public class Main extends AppCompatActivity {
 
     private EditText username;
     private EditText password;
     private Button loginButton;
+    private CheckBox saveLogin;
     private Context mContext;
     private LinearLayout readyLayout;
     private LinearLayout loginLayout;
-
+    private SharedPreferences sp;
+    private String usernameText;
+    private String passwordText;
+    private String deviceId;
+    private String key;
+    private Map cookies;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         mContext = this;
+        //有cookie就直接跳走。
+        cookies = Url.getInstance().getCookieStore();
+
+        Cookie sid = (Cookie) cookies.get("LeemZfsid");
+        Cookie fuc = (Cookie) cookies.get("LeemZfuc");
+        if(sid != null && fuc != null) {
+            if (sid.getValue().length() > 0 && fuc.getValue().length() > 0) {
+                //走一个
+                toForum();
+            }
+        }
+        //System.out.println(cookies.get("LeemZfsid"));//LeemZfsid//LeemZfuc
+
+        deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+
         username = (EditText)findViewById(R.id.username);
         password = (EditText)findViewById(R.id.password);
         loginButton = (Button)findViewById(R.id.login_button);
+        saveLogin = (CheckBox)findViewById(R.id.save_login);
 
+        sp = getSharedPreferences("login_info",MODE_PRIVATE);
 
         initToolBar();
+        usernameText = sp.getString("username","");
+        String passwordTextEncrypt = sp.getString("password","");
+        System.out.println("我的用户名："+usernameText);
+        System.out.println("我的密码"+passwordTextEncrypt);
+        if(usernameText.length()>0 && passwordTextEncrypt.length()>0){
+            //开始解密码密码
+            try {
+                String outputData = AESCoder.decrypt(deviceId,passwordTextEncrypt);
+                if(outputData.length()>0){
+                    passwordText = outputData;
+                    username.setText(usernameText);
+                    password.setText(passwordText);
+                    saveLogin.setChecked(true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         //绑定事件
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -105,9 +154,7 @@ public class Main extends AppCompatActivity {
 
             switch(msg.what) {
                 case 1001:
-                    Intent list = new Intent(mContext,Forum.class);
-                    startActivity(list);
-                    finish();
+                    toForum();
                     break;
                 case 1002:
                     initLoginInfo();
@@ -129,11 +176,13 @@ public class Main extends AppCompatActivity {
     };
 
     private void initLoginInfo(){
+        if(usernameText.length()>0 && passwordText.length()>0){
+            username.setText(usernameText);
+            password.setText(passwordText);
+        }
         readyLayout.removeAllViews();
         readyLayout.setVisibility(View.GONE);
         loginLayout.setVisibility(View.VISIBLE);
-        username.setText(null);
-        password.setText(null);
     }
 
     class MyThread implements Runnable{
@@ -141,11 +190,10 @@ public class Main extends AppCompatActivity {
         public void run(){
 
             Url.getInstance().setUrl(Config.LOGIN_URL);
-            System.out.println(String.valueOf(username.getText()));
-            System.out.println(String.valueOf(password.getText()));
             Url.getInstance().addParameter("username", String.valueOf(username.getText()));
             Url.getInstance().addParameter("password", String.valueOf(password.getText()));
             String string = Url.getInstance().doPost();
+
             if(string == "net_error"){
                 mHandler.obtainMessage(Config.FAILURE_NET_ERROR).sendToTarget();
                 return;
@@ -153,7 +201,33 @@ public class Main extends AppCompatActivity {
             int position;
             position = string.indexOf("type=\"text/javascript\">top.location.href='index.asp';</script>");
             if(position>0) {
+
+                //设置CookieStore
+                Url.getInstance().setCookieStore();
                 //需要解析是否是登录成功
+                SharedPreferences.Editor editor = sp.edit();
+
+                if(saveLogin.isChecked()==true){
+
+                    //记住密码
+                    try {
+                        passwordText = AESCoder.encrypt(deviceId,String.valueOf(password.getText()));
+                        //System.out.println("加密后:\t" + String.valueOf(password.getText()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    //用putString的方法保存数据
+                    if(passwordText.length()>0) {
+                        usernameText = String.valueOf(username.getText());
+                        editor.putString("username", usernameText);
+                        editor.putString("password", passwordText);
+                        editor.commit();
+                    }
+                }else{
+                    editor.remove("username");
+                    editor.remove("password");
+                    editor.commit();
+                }
                 mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
             }else{
                 position = string.indexOf("该用户已被占用或者密码输入错误");
@@ -163,7 +237,6 @@ public class Main extends AppCompatActivity {
                     mHandler.obtainMessage(Config.FAILURE).sendToTarget();
                 }
             }
-            Log.d(Config.TAG, "" + string);
         }
     };
 
@@ -187,5 +260,11 @@ public class Main extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void toForum(){
+        Intent list = new Intent(mContext,Forum.class);
+        startActivity(list);
+        finish();
     }
 }

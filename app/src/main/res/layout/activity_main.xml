@@ -26,7 +26,12 @@
             android:layout_width="match_parent"
             android:layout_height="248dp"
             android:layout_gravity="center_vertical">
-
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_button"
+                android:id="@+id/login_button"
+                android:layout_gravity="center_horizontal" />
             <AutoCompleteTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,12 +52,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/save_login"
                 android:id="@+id/save_login"
-                android:layout_gravity="center_horizontal" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/login_button"
-                android:id="@+id/login_button"
                 android:layout_gravity="center_horizontal" />
 
         </LinearLayout>
