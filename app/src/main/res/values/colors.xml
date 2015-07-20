@@ -5,6 +5,7 @@
     <color name="material_green_A200">#00acfd</color>
     <color name="material_write">#FFFFFF</color>
     <color name="material_yellow_100">#fdf4de</color>
+    <color name="material_yellow_50">#83fffce8</color>
     <color name="material_pink_50">#ffe4cb</color>
     <color name="state_menu_item_selected">#44009688</color>
 </resources>

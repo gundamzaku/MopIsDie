@@ -54,12 +54,13 @@ public class ForumAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         convertView = myInflater.inflate(R.layout.array_forum,null);
-        TextView title = (TextView)convertView.findViewById(R.id.forum_item);
+        final TextView title = (TextView)convertView.findViewById(R.id.forum_item);
         title.setText(Html.fromHtml(items.get(position)[1]));
 
         title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                title.setBackgroundResource(R.color.material_yellow_50);
                 //Log.d(Config.TAG,items.get(position)[0]);
                 //跳新的页面
                 Intent list = new Intent(mContext,ViewTopic.class);

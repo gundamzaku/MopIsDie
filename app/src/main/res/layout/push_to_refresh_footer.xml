@@ -5,13 +5,18 @@
     android:gravity="center"
     android:orientation="vertical" >
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/h_line" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="10dp" >
 
         <LinearLayout
-            android:id="@+id/layout"
+            android:id="@+id/layout_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -21,35 +26,24 @@
             <ProgressBar
                 android:layout_width="33dp"
                 android:layout_height="35dp"
-                android:id="@+id/refreshing"
+                android:id="@+id/refreshing_bottom"
                 style="@style/customProgressBar" />
 
             <TextView
-                android:id="@+id/tip"
+                android:id="@+id/tip_bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center" />
 
-            <TextView
-                android:id="@+id/lastUpdate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="12sp" />
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/arrow"
+            android:id="@+id/arrow_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp"
-            android:layout_toLeftOf="@id/layout"
-            android:src="@drawable/pull_to_refresh_arrow" />
+            android:layout_toLeftOf="@id/layout_bottom"
+            android:src="@drawable/push_to_load_arrow" />
     </RelativeLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/h_line" />
 
 </LinearLayout>

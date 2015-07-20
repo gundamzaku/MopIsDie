@@ -131,6 +131,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         adapter = new ForumAdapter(mContext);
                     }
                     forumList = (ScrollListView)findViewById(R.id.forum_list);
+
                     //LinearLayout forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
                     if(what == ScrollListView.REFRESH){
                         //刷新,先清空
@@ -205,6 +206,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
     @Override
     public void onLoad(){
-
+        forumList.onLoadComplete();
     }
 }
