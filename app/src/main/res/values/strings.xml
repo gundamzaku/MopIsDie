@@ -12,6 +12,13 @@
     <string name="empty_username">请输入用户名</string>
     <string name="empty_password">请输入用户密码</string>
 
+    <!--page-->
+    <string name="page_full">您已经到达最后一页</string>
+    <string name="page_load_failure">页面读取失败，请重新加载</string>
+    <string name="page_reload">重新加载</string>
+    <string name="start_reload">开始加载</string>
+    <!--page-->
+
     <string name="net_error">服务器抽疯了，一会再试下吧</string>
     <string name="title_activity_view_topic">ViewTopic</string>
 

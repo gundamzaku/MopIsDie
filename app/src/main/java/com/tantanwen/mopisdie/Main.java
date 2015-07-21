@@ -176,6 +176,7 @@ public class Main extends AppCompatActivity {
     };
 
     private void initLoginInfo(){
+        Url.clearInstance();
         if(usernameText.length()>0 && passwordText.length()>0){
             username.setText(usernameText);
             password.setText(passwordText);

@@ -46,6 +46,10 @@ public class Url {
         return helper;
     }
 
+    public static final void clearInstance(){
+        helper = null;
+    }
+
     public Url(){
         httpParams = new BasicHttpParams();
         //设置超时时间

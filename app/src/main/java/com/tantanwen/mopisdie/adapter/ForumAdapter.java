@@ -32,7 +32,9 @@ public class ForumAdapter extends BaseAdapter {
     }
 
     public void setItems(ArrayList<String[]> fromItems){
-        items = (ArrayList<String[]>) fromItems.clone();
+        items = fromItems;
+        //不能用克隆
+        //items = (ArrayList<String[]>) fromItems.clone();
     }
 
     @Override
@@ -66,6 +68,10 @@ public class ForumAdapter extends BaseAdapter {
                 Intent list = new Intent(mContext,ViewTopic.class);
                 list.putExtra("tid",items.get(position)[0]);
                 mContext.startActivity(list);
+                /*
+                提示信息
+                MP达到9999才能查看该帖。
+                */
             }
         });
         //System.out.println(position);

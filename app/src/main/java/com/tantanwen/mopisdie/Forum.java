@@ -19,13 +19,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tantanwen.mopisdie.adapter.ForumAdapter;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.widget.ScrollListView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +45,9 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private Context mContext;
     private Toolbar toolbar;
     private int what;
+    private int page = 1;
+    //只让你翻20次
+    private int pageMax = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,8 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
 
         initToolBar();
         initDrawer();
+
+        forumList = (ScrollListView)findViewById(R.id.forum_list);
 
         ListView mMenuListView = (ListView) findViewById(R.id.menu_list);
         String[] mMenuTitles = getResources().getStringArray(R.array.array_left_menu_forum);
@@ -97,6 +108,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
 
     private void loadData(int what){
         //启动线程
+        strs.clear();
         this.what = what;
         MyThread myThread = new MyThread();
         Thread td1 = new Thread(myThread);
@@ -122,44 +134,127 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
 
     private ForumAdapter adapter;
+    private TextView tipReload;
+    private ProgressBar refreshingReload;
+    private ArrayList<String[]> dataItems = new ArrayList<>();
+    private View reloadHeader;
+
     private Handler mHandler = new Handler() {
         public void handleMessage (Message msg) {//此方法在ui线程运行
             switch(msg.what) {
-                case 1001:
+                case Config.SUCCESS:
+
+                    //如果我是第一次加载或是刷新
+                    if(what != ScrollListView.LOAD){
+                        adapter = null;
+                        if(dataItems.size()>0) {
+                            dataItems.clear();
+                        }
+                        System.out.println(dataItems);
+                    }
+                    dataItems.addAll((ArrayList<String[]>) strs.clone());
+
                     //ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(mContext,R.layout.array_forum,strs);
                     if(adapter == null) {
                         adapter = new ForumAdapter(mContext);
                     }
-                    forumList = (ScrollListView)findViewById(R.id.forum_list);
-
+                    forumList.setVisibility(View.VISIBLE);
                     //LinearLayout forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
                     if(what == ScrollListView.REFRESH){
                         //刷新,先清空
                         //forumLayout.removeAllViews();//这个把控件也给清了
                         forumList.onRefreshComplete();
                     }
-                    System.out.println("strs的长度"+strs.size());
-                    adapter.setItems(strs);
+                    if(what == ScrollListView.LOAD){
+                        forumList.onLoadComplete();
+                    }
+
+                    System.out.println("dataItems的长度"+dataItems.size());
                     //拿到数据
-                    forumList.setAdapter(adapter);
-                    forumList.deferNotifyDataSetChanged();//重新加载数据
+                    if(what!=ScrollListView.LOAD) {
+                        adapter.setItems(dataItems);
+                        forumList.setAdapter(adapter);
+                    }else{
+                        forumList.deferNotifyDataSetChanged();//重新加载数据
+                    }
                     if(what == ScrollListView.LOADFIRST) {
                         //设置刷新事件
                         forumList.setOnRefreshListener((ScrollListView.OnRefreshListener) mContext);
                         //设置加载事件
                         forumList.setOnLoadListener((ScrollListView.OnLoadListener) mContext);
                     }
+                    System.out.println("reloadHeader:"+reloadHeader);
+                    if(reloadHeader!=null){
+                        LinearLayout forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
+                        forumLayout.removeView(reloadHeader);
+                    }
+                    break;
+                case Config.SUCCESS_FULL_PAGE:
+                    //最后一页
+                    Toast.makeText(getApplicationContext(), getResources().getString
+                            (R.string.page_full), Toast.LENGTH_SHORT).show();
+                    break;
+                case Config.FAILURE_NET_ERROR:
+                    //加载失败，请重新尝试
+                    LinearLayout forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
+                    forumList.setVisibility(View.GONE);
+                    LayoutInflater inflater = LayoutInflater.from(mContext);
+                    reloadHeader = inflater.inflate(R.layout.failure_reload_header, forumLayout);
+                    Button button_reload = (Button)reloadHeader.findViewById(R.id.button_reload);
+                    tipReload = (TextView)reloadHeader.findViewById(R.id.tip_reload);
+                    refreshingReload = (ProgressBar)reloadHeader.findViewById(R.id.refreshing_reload);
+                    //init
+                    button_reload.setVisibility(View.VISIBLE);
+                    tipReload.setText(R.string.page_load_failure);
+                    refreshingReload.setVisibility(View.GONE);
+
+
+                    button_reload.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            v.setVisibility(View.GONE);
+                            tipReload.setText(R.string.start_reload);
+                            refreshingReload.setVisibility(View.VISIBLE);
+                            loadData(ScrollListView.LOADFIRST);
+                        }
+                    });
+                    break;
             }
         }
     };
     class MyThread implements Runnable{
 
         public void run(){
-            if(strs.size()>0){
-                strs.clear();
+            //if(strs.size()>0){
+              //  strs.clear();
+            //}
+            String url = Config.FORUM_URL;
+            if(what == ScrollListView.LOAD) {
+                //加载分页的数据
+                page++;
+                if (page>pageMax){
+                    //不用操作了
+                    mHandler.obtainMessage(Config.SUCCESS_FULL_PAGE).sendToTarget();
+                    return;
+                }
+                url += "&page="+page;
             }
-            Url.getInstance().setUrl(Config.FORUM_URL);
+
+            Url.getInstance().setUrl(url);
             String string = Url.getInstance().doGet();
+            //String string = "net_error";
+            Log.d(Config.TAG,"url is "+url);
+            //Log.d(Config.TAG,"string is "+string);
+            /*
+            if(page == 1) {
+                string = "net_error";
+                page++;
+            }*/
+            //Log.d(Config.TAG,string);
+            if(string == "net_error"){
+                mHandler.obtainMessage(Config.FAILURE_NET_ERROR).sendToTarget();
+                return;
+            }
             //Pattern p = Pattern.compile("<a href=\"viewtopic.asp/?fid=1&tid=(.*?)\" title='(.*?)'>(.*?)></a><br />");
             Pattern p = Pattern.compile("<a href=\"viewtopic.asp\\?fid=1&tid=(.*?)\" title='(.*?)'>(.*?)</a><br />");
             Matcher m = p.matcher(string);
@@ -168,6 +263,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             while (m.find()) {
                 strs.add(new String[]{m.group(1), m.group(3)});
             }
+            System.out.println("strs="+strs);
             mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
             /*
             for (String s : strs){
@@ -206,6 +302,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
     @Override
     public void onLoad(){
-        forumList.onLoadComplete();
+        loadData(ScrollListView.LOAD);
     }
 }
