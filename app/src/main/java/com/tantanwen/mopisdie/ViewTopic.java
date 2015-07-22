@@ -3,6 +3,7 @@ package com.tantanwen.mopisdie;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -91,6 +92,8 @@ public class ViewTopic extends AppCompatActivity {
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);//设置监听器
     }
+
+    private SharedPreferences sp;
     private Handler mHandler = new Handler() {
         @JavascriptInterface
         public void handleMessage (Message msg) {//此方法在ui线程运行
@@ -102,6 +105,9 @@ public class ViewTopic extends AppCompatActivity {
                 case 1001:
                     //System.out.println(string);
                     //启动正则，过滤数据
+                    sp = mContext.getSharedPreferences("mop_config",MODE_PRIVATE);
+                    Integer loadImagesNoWifi = sp.getInt("load_images_nowifi", 0);
+                    System.out.println(string);
                     //拿标题
                     p = Pattern.compile("<a href=\"managetopic.asp\\?action=manageposts&fid=1&(.*?)\">(.*?)</a>");
                     m = p.matcher(string);
@@ -118,7 +124,13 @@ public class ViewTopic extends AppCompatActivity {
                         //"<style type=\"text/css\">a:link, a:visited { color: #000; text-decoration: none; }a:hover { background-color: #eff9d0; text-decoration: none; }</style>"
                         string = "<link rel=\"stylesheet\" href=\"file:///android_asset/common.css\" type=\"text/css\" />"+m.group(1);//
                     }else{
-                        string = "";
+                        p = Pattern.compile("<table class=\"tipsborder\" cellSpacing=\"0\" cellPadding=\"0\" align=\"center\">([\\s\\S]*?)</table>");
+                        m = p.matcher(string);
+                        if(m.find() == true){
+                            string = "<link rel=\"stylesheet\" href=\"file:///android_asset/common.css\" type=\"text/css\" />"+m.group(1);
+                        }else{
+                            string = "出现了意外";
+                        }
                     }
                     //return shows3
                     string = string.replaceAll("return shows3","return injectedObject.shows3");
@@ -130,6 +142,23 @@ public class ViewTopic extends AppCompatActivity {
                     //webView.requestFocus(View.FOCUS_DOWN);
 
                     webView.addJavascriptInterface(new JsObject(), "injectedObject");
+
+                    //内部地址全加上跳转
+                    string = string.replaceAll("<a href=\"attachments","<a href=\""+Config.HOST+"/attachments");
+
+                    if(loadImagesNoWifi != 1){
+                        //批量将图片全部替换成url形式
+                        //string = string.replaceAll("<img src=\"|\'([\\s\\S]*?)\"|'","11111111111");
+                        /*
+                        String regex = "<img src=\"(.*?)\"([\\s\\S]*?)>";  //查找开始标签的<
+                        Pattern pattern = Pattern.compile(regex);
+                        Matcher matcher = pattern.matcher(string);
+                        while (matcher.find()) {
+                            System.out.println(matcher.group(1));
+                        }*/
+                        string = string.replaceAll("<img src=[\"|'](attachments|face)/(.*?)[\"|'](.*?)/>","<font color=yellow>图片</font>");
+                        string = string.replaceAll("<img src=\"(.*?)\"(.*?)/>","<a href=\"$1\" target=\"_blank\"><font color=blue>图片</font></a>");
+                    }
 
                     webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
                     //webView.loadUrl("javascript:alert(injectedObject.toString())");

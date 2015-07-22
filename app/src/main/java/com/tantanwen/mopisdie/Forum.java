@@ -31,8 +31,6 @@ import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.widget.ScrollListView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -47,7 +45,10 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private int what;
     private int page = 1;
     //只让你翻20次
-    private int pageMax = 20;
+    private int pageMax = 2;
+    private DrawerLayout mDrawerLayout;
+    private LinearLayout forumLayout;
+    private Button button_reload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +92,15 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         */
                         break;
                     case 3:
+                        loadData(ScrollListView.LOADFIRST);
+                        initReloadView();
+                        button_reload.setVisibility(View.GONE);
+                        tipReload.setText(R.string.start_reload);
+                        refreshingReload.setVisibility(View.VISIBLE);
+
+                        //隐藏列表
+                        forumList.setVisibility(View.GONE);
+                        mDrawerLayout.closeDrawers();
                         break;
                     case 4:
                         finish();
@@ -103,6 +113,12 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                 }
             }
         });
+
+        initReloadView();
+        button_reload.setVisibility(View.GONE);
+        tipReload.setText(R.string.start_reload);
+        refreshingReload.setVisibility(View.VISIBLE);
+
         loadData(ScrollListView.LOADFIRST);
     }
 
@@ -126,11 +142,24 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
     private void initDrawer(){
 
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open, R.string.close);
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);//设置监听器
+
+    }
+
+    public void initReloadView(){
+
+        //调出加载页面
+        forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
+        forumList.setVisibility(View.GONE);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        reloadHeader = inflater.inflate(R.layout.failure_reload_header, forumLayout);
+        button_reload = (Button)reloadHeader.findViewById(R.id.button_reload);
+        tipReload = (TextView)reloadHeader.findViewById(R.id.tip_reload);
+        refreshingReload = (ProgressBar)reloadHeader.findViewById(R.id.refreshing_reload);
     }
 
     private ForumAdapter adapter;
@@ -196,18 +225,11 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                     break;
                 case Config.FAILURE_NET_ERROR:
                     //加载失败，请重新尝试
-                    LinearLayout forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
-                    forumList.setVisibility(View.GONE);
-                    LayoutInflater inflater = LayoutInflater.from(mContext);
-                    reloadHeader = inflater.inflate(R.layout.failure_reload_header, forumLayout);
-                    Button button_reload = (Button)reloadHeader.findViewById(R.id.button_reload);
-                    tipReload = (TextView)reloadHeader.findViewById(R.id.tip_reload);
-                    refreshingReload = (ProgressBar)reloadHeader.findViewById(R.id.refreshing_reload);
+                    initReloadView();
                     //init
                     button_reload.setVisibility(View.VISIBLE);
                     tipReload.setText(R.string.page_load_failure);
                     refreshingReload.setVisibility(View.GONE);
-
 
                     button_reload.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -234,6 +256,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                 page++;
                 if (page>pageMax){
                     //不用操作了
+                    forumList.onLoadComplete();
                     mHandler.obtainMessage(Config.SUCCESS_FULL_PAGE).sendToTarget();
                     return;
                 }

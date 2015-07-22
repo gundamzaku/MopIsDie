@@ -38,6 +38,11 @@
                 android:visibility="gone"
                 android:id="@+id/refreshing_reload"
                 style="@style/customProgressBar" />
+            <TextView
+                android:text="开……始"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
         </LinearLayout>
 
     </LinearLayout>
