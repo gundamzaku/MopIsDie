@@ -107,7 +107,7 @@ public class ViewTopic extends AppCompatActivity {
                     //启动正则，过滤数据
                     sp = mContext.getSharedPreferences("mop_config",MODE_PRIVATE);
                     Integer loadImagesNoWifi = sp.getInt("load_images_nowifi", 0);
-                    System.out.println(string);
+                    //System.out.println(string);
                     //拿标题
                     p = Pattern.compile("<a href=\"managetopic.asp\\?action=manageposts&fid=1&(.*?)\">(.*?)</a>");
                     m = p.matcher(string);
@@ -159,7 +159,7 @@ public class ViewTopic extends AppCompatActivity {
                         string = string.replaceAll("<img src=[\"|'](attachments|face)/(.*?)[\"|'](.*?)/>","<font color=yellow>图片</font>");
                         string = string.replaceAll("<img src=\"(.*?)\"(.*?)/>","<a href=\"$1\" target=\"_blank\"><font color=blue>图片</font></a>");
                     }
-
+                    string += "<script type=\"text/javascript\" src=\"file:///android_asset/init.js\"></script>";
                     webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
                     //webView.loadUrl("javascript:alert(injectedObject.toString())");
                     //Log.d(Config.TAG,"结束");
