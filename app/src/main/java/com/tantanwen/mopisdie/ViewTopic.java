@@ -21,7 +21,11 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
@@ -40,6 +44,13 @@ public class ViewTopic extends AppCompatActivity {
     private Toolbar toolbar;
     private Context mContext;
     private String fromJs_pid,fromJs_f;
+    private LinearLayout forumLayout;
+    private WebView webView;
+    private View reloadHeader;
+    private Button button_reload;
+    private TextView tipReload;
+    private ProgressBar refreshingReload;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -52,6 +63,8 @@ public class ViewTopic extends AppCompatActivity {
 
         initToolBar();
         initDrawer();
+        webView = (WebView)findViewById(R.id.webView);
+
         ListView mMenuListView = (ListView) findViewById(R.id.menu_list);
         String[] mMenuTitles = getResources().getStringArray(R.array.array_left_menu_topic);
         mMenuListView.setAdapter(new ArrayAdapter<String>(this,
@@ -73,6 +86,12 @@ public class ViewTopic extends AppCompatActivity {
                 }
             }
         });
+
+        initReloadView();
+        button_reload.setVisibility(View.GONE);
+        tipReload.setText(R.string.start_reload);
+        refreshingReload.setVisibility(View.VISIBLE);
+
         //启动线程
         MyThread myThread = new MyThread();
         Thread td1 = new Thread(myThread);
@@ -92,7 +111,24 @@ public class ViewTopic extends AppCompatActivity {
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);//设置监听器
     }
+    public void initReloadView(){
 
+        //调出加载页面
+        forumLayout = (LinearLayout)findViewById(R.id.topic_layout);
+        webView.setVisibility(View.GONE);
+        View failureReloadHeader = forumLayout.findViewById(R.id.failure_reload_header);
+
+        if(failureReloadHeader == null) {
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            reloadHeader = inflater.inflate(R.layout.failure_reload_header, forumLayout);
+        }else{
+            reloadHeader = failureReloadHeader;
+        }
+
+        button_reload = (Button)reloadHeader.findViewById(R.id.button_reload);
+        tipReload = (TextView)reloadHeader.findViewById(R.id.tip_reload);
+        refreshingReload = (ProgressBar)reloadHeader.findViewById(R.id.refreshing_reload);
+    }
     private SharedPreferences sp;
     private Handler mHandler = new Handler() {
         @JavascriptInterface
@@ -136,7 +172,7 @@ public class ViewTopic extends AppCompatActivity {
                     string = string.replaceAll("return shows3","return injectedObject.shows3");
                     string = string.replaceAll("return shows","return injectedObject.shows");
                     string = string.replaceAll("onclick=\"showquot","onclick=\"injectedObject.showquot");
-                    WebView webView = (WebView)findViewById(R.id.webView);
+
                     webView.setBackgroundColor(0); // 设置背景色
                     webView.getSettings().setJavaScriptEnabled(true);
                     //webView.requestFocus(View.FOCUS_DOWN);
@@ -158,11 +194,16 @@ public class ViewTopic extends AppCompatActivity {
                         }*/
                         string = string.replaceAll("<img src=[\"|'](attachments|face)/(.*?)[\"|'](.*?)/>","<font color=yellow>图片</font>");
                         string = string.replaceAll("<img src=\"(.*?)\"(.*?)/>","<a href=\"$1\" target=\"_blank\"><font color=blue>图片</font></a>");
+                    }else{
+                        string = string.replaceAll("<img src=[\"|'](attachments|face)/(.*?)[\"|'](.*?)/>","<img src=\""+Config.HOST+"/$1/$2\"$3>");
                     }
                     string += "<script type=\"text/javascript\" src=\"file:///android_asset/init.js\"></script>";
+                    //System.out.println(string);
                     webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
                     //webView.loadUrl("javascript:alert(injectedObject.toString())");
                     //Log.d(Config.TAG,"结束");
+                    webView.setVisibility(View.VISIBLE);
+
                     break;
                 case 2001:
                     //System.out.println(string);

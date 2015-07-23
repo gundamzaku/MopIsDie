@@ -1,6 +1,6 @@
 ﻿* { margin: 0px; padding: 0px; font-size: 16sp; line-height: 18px; font-family: simsun; Courier New;}
 html{ scrollbar-face-color: #fff; scrollbar-highlight-color: #849cbd; scrollbar-shadow-color: #849cbd; scrollbar-3dlight-color: #849cbd; scrollbar-arrow-color: #849cbd;scrollbar-track-color: #fff; scrollbar-darkshadow-color: #849cbd; }
-body { background: url(bg.jpg) fixed; padding: 15px 10px 5px 10px; }
+body { fixed; padding: 15px 10px 5px 10px; }
 p { padding-top: 19px; }
 img { border: 0px; }
 hr { margin: 8px 0px 8px 0px !important; >margin: 0px !important; margin: 0px; }

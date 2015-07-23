@@ -154,9 +154,18 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
 
         //调出加载页面
         forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
+
+        View failureReloadHeader = forumLayout.findViewById(R.id.failure_reload_header);
+
         forumList.setVisibility(View.GONE);
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        reloadHeader = inflater.inflate(R.layout.failure_reload_header, forumLayout);
+
+        if(failureReloadHeader == null) {
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            reloadHeader = inflater.inflate(R.layout.failure_reload_header, forumLayout);
+        }else{
+            reloadHeader = failureReloadHeader;
+        }
+
         button_reload = (Button)reloadHeader.findViewById(R.id.button_reload);
         tipReload = (TextView)reloadHeader.findViewById(R.id.tip_reload);
         refreshingReload = (ProgressBar)reloadHeader.findViewById(R.id.refreshing_reload);
@@ -187,7 +196,10 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                     if(adapter == null) {
                         adapter = new ForumAdapter(mContext);
                     }
+
+                    //清除
                     forumList.setVisibility(View.VISIBLE);
+
                     //LinearLayout forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
                     if(what == ScrollListView.REFRESH){
                         //刷新,先清空
@@ -268,11 +280,11 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             //String string = "net_error";
             Log.d(Config.TAG,"url is "+url);
             //Log.d(Config.TAG,"string is "+string);
-            /*
-            if(page == 1) {
-                string = "net_error";
-                page++;
-            }*/
+
+            //if(page == 1) {
+            //    string = "net_error";
+            //    page++;
+            //}
             //Log.d(Config.TAG,string);
             if(string == "net_error"){
                 mHandler.obtainMessage(Config.FAILURE_NET_ERROR).sendToTarget();

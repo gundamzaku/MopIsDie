@@ -3,29 +3,38 @@ function checkHref(){
 	var result;
 	var href = document.getElementsByTagName("a");
 	for(i in href){
-		console.log(href[i].outerHTML);
-		console.log(href[i].href);
-		console.log(href[i]);
+		//console.log(href[i].outerHTML);
+		//console.log(href[i].href);
+		//console.log(href[i]);
+		var url = href[i].outerHTML;
 		//奇怪，用outerHtml取不到值。
-		if(typeof(href[i].href) == "undefined")continue;
+		if(typeof(url) == "undefined")continue;
 
-		result = href[i].href.indexOf("topicedit.asp");
-		if(result<0){
+		result = url.indexOf("topicedit.asp");
+		if(result>0){
 			continue;
 		}
-		result = href[i].href.indexOf("pm.asp");
-		if(result<0){
+		result = url.indexOf("pm.asp");
+		if(result>0){
 			continue;
 		}
-		result = href[i].href.indexOf("?fid=1&tid");
 
-		if(result<0){
+		result = url.indexOf("?fid=1&tid");
+		if(result>0){
+			href[i].href = "javascript:return;";
+			continue;
+		}
+
+		result = url.indexOf("?fid=1&amp;tid=");
+		if(result>0){
 			//href[i].addEventListener('click', function(){}, false);
-			//href[i].href = "javascript:return;";
+			href[i].href = "javascript:return;";
 			continue;
 		}
+
+		//不知道为什么，这个一查一个准
 		result = href[i].href.indexOf("#quot");
-		if(result<0){
+		if(result>0){
 			continue;
 		}
 
@@ -34,7 +43,6 @@ function checkHref(){
 		if(result!=0){
 			href[i].href = "http://"+href[i].href;
 		}
-
 	}
 }
 window.onload=function(){
