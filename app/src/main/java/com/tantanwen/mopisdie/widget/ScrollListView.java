@@ -29,7 +29,6 @@ public class ScrollListView extends ListView implements OnScrollListener {
     private OnLoadListener onLoadListener;
     private int firstVisibleItem;
     private int scrollState;
-    private boolean isLoad;
     private RotateAnimation animation;
     private RotateAnimation reverseAnimation;
     private LayoutInflater inflater;
@@ -41,7 +40,6 @@ public class ScrollListView extends ListView implements OnScrollListener {
     private int headerContentInitialHeight;
     private int headerContentHeight;
     private int startY;
-    private boolean isRecorded;
     private int state;
 
     // 定义header的四种状态和当前状态
@@ -61,16 +59,15 @@ public class ScrollListView extends ListView implements OnScrollListener {
     public static final int LOAD = 1;
     public static final int LOADFIRST = 2;
     private View footer;
-    private TextView loadFull;
-    private TextView noData;
-    private TextView more;
-    private ProgressBar loading;
     private int footerContentInitialHeight;
     private int footerContentHeight;
     private int lastTopVisibleItem;
     private ImageView arrow_bottom;
     private TextView tip_bottom;
     private ProgressBar refreshing_bottom;
+    private boolean isRecorded;
+    private boolean isLoad;
+    private boolean loadStatus = false;
 
     public ScrollListView(Context context) {
         super(context);
@@ -105,6 +102,10 @@ public class ScrollListView extends ListView implements OnScrollListener {
         reverseAnimation.setFillAfter(true);
 
         inflater = LayoutInflater.from(context);
+
+        /*
+            设置头部加载
+         */
         header = inflater.inflate(R.layout.pull_to_refresh_header, null);
         arrow = (ImageView) header.findViewById(R.id.arrow);
         tip = (TextView) header.findViewById(R.id.tip);
@@ -118,7 +119,9 @@ public class ScrollListView extends ListView implements OnScrollListener {
         //Log.d(Config.TAG,"headerContentHeight:"+headerContentHeight);
         topPadding(-headerContentHeight);   //靠这个来重新定义herader的位置的
 
-        //设置底部
+        /*
+            设置底部加载
+         */
         footer = inflater.inflate(R.layout.push_to_refresh_footer, null);
         arrow_bottom = (ImageView) footer.findViewById(R.id.arrow_bottom);
         tip_bottom = (TextView) footer.findViewById(R.id.tip_bottom);
@@ -130,12 +133,15 @@ public class ScrollListView extends ListView implements OnScrollListener {
         //Log.d(Config.TAG,"footerContentHeight is "+footerContentHeight);
         bottomPadding(-footerContentHeight);
 
+        /*
+            加入视图中去
+         */
         this.addHeaderView(header);
         this.addFooterView(footer);
         this.setOnScrollListener(this);
 
+        loadStatus = true;
     }
-
 
     // 用来计算header大小的。内部测量item的方法
     private void measureView(View child) {
@@ -160,6 +166,7 @@ public class ScrollListView extends ListView implements OnScrollListener {
 
         child.measure(childWidthSpec, childHeightSpec);
     }
+
     // 调整header的大小。其实调整的只是距离顶部的高度。
     private void topPadding(int topPadding) {
         header.setPadding(header.getPaddingLeft(), topPadding, header.getPaddingRight(), header.getPaddingBottom());
@@ -182,9 +189,9 @@ public class ScrollListView extends ListView implements OnScrollListener {
         用户在做移动的操作的时候才会触发，就是用手指摸屏幕
      */
     private void whenMove(MotionEvent ev) {
-        //if (!isRecorded) {
-            //return;
-       // }
+        if (!loadStatus) {
+            return;
+        }
         int tmpY = (int) ev.getY();
         //控制速度，下拉的幅度越大就越慢
         int space = tmpY - startY;
@@ -327,7 +334,6 @@ public class ScrollListView extends ListView implements OnScrollListener {
                 arrow.setAnimation(reverseAnimation);
                 break;
             case RELEASE:
-
                 arrow.setVisibility(View.VISIBLE);
                 tip.setVisibility(View.VISIBLE);
                 lastUpdate.setVisibility(View.VISIBLE);

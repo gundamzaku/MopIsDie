@@ -58,7 +58,7 @@ public class ViewTopic extends AppCompatActivity {
         setContentView(R.layout.activity_view_topic);
         Intent intent = getIntent();
         tid = intent.getStringExtra("tid");
-        //System.out.println("到这个页面我的tid是："+tid);
+        System.out.println("到这个页面我的tid是："+tid);
         mContext = this;
 
         initToolBar();
@@ -76,6 +76,7 @@ public class ViewTopic extends AppCompatActivity {
                 switch (position){
                     case 0:
                         Intent list = new Intent(mContext,Reply.class);
+                        list.putExtra("tid",tid);
                         mContext.startActivity(list);
                         //LayoutInflater inflater = getLayoutInflater();
                         //View layout = inflater.inflate(R.layout.activity_reply,(ViewGroup) findViewById(R.id.dialog));
@@ -214,6 +215,8 @@ public class ViewTopic extends AppCompatActivity {
                         String quote = m.group(1);
                         //页面跳转，并把值带过去
                         Intent list = new Intent(mContext,Reply.class);
+                        list.putExtra("tid",tid);
+                        System.out.println("tid is "+tid);
                         list.putExtra("quote",quote);
                         mContext.startActivity(list);
                     }

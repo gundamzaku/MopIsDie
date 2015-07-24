@@ -11,6 +11,7 @@
     <string name="login_info_error">该用户已被占用或者密码输入错误。您最多有……嗯，几次尝试吧。</string>
     <string name="empty_username">请输入用户名</string>
     <string name="empty_password">请输入用户密码</string>
+    <string name="page_load">页面加载中…</string>
 
     <!--page-->
     <string name="page_full">我累了，不想再加载了</string>
@@ -55,4 +56,18 @@
     <string name="push_to_load">上推可以加载</string>
     <string name="release_to_load">松开可以加载</string>
     <!--END-->
+
+    <!--发/回帖相关-->
+    <string name="aboutlink">相关链接</string>
+    <string name="imglink">相关图片</string>
+    <string name="face">表情</string>
+    <string name="ifanonymity">匿名</string>
+    <string name="disable_update">不UP</string>
+    <string name="sig">签名</string>
+    <string name="numberSigned">送楼主MP</string>
+    <string name="clearQuoteButton">清空引用</string>
+    <string name="empty_message">请填写好回复内容</string>
+    <string name="page_submit_now">正在提交</string>
+    <string name="parameter_error">参数错误</string>
+    <!--上推的配置-->
 </resources>

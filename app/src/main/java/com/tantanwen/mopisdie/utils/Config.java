@@ -14,6 +14,8 @@ public class Config {
     public static String VIEW_TOPIC_CP_URL = HOST+"/topiccp.asp?action=ajaxquot";
     public static String VIEW_PM_URL = HOST+"/pm.asp";
 
+    public static String POST_REPLY_URL = HOST+"/post.asp?action=newreply";
+
     //定义成功的操作符
     public static final int SUCCESS               = 1001;
     public static final int SUCCESS_02            = 2001;

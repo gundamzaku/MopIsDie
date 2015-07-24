@@ -1,7 +1,5 @@
 package com.tantanwen.mopisdie;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -44,8 +41,9 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private Toolbar toolbar;
     private int what;
     private int page = 1;
+    private boolean isLoad = false; //加个锁锁住
     //只让你翻20次
-    private int pageMax = 2;
+    private int pageMax = 20;
     private DrawerLayout mDrawerLayout;
     private LinearLayout forumLayout;
     private Button button_reload;
@@ -61,13 +59,33 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
 
         forumList = (ScrollListView)findViewById(R.id.forum_list);
 
+        initReloadView();
+        button_reload.setVisibility(View.GONE);
+        tipReload.setText(R.string.start_reload);
+        refreshingReload.setVisibility(View.VISIBLE);
+
+        setMenuList();
+
+        loadData(ScrollListView.LOADFIRST);
+    }
+
+    private void setMenuList(){
+
         ListView mMenuListView = (ListView) findViewById(R.id.menu_list);
         String[] mMenuTitles = getResources().getStringArray(R.array.array_left_menu_forum);
         mMenuListView.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mMenuTitles));
         mMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println(position);
+                Log.d(Config.TAG,"position="+position);
+                Log.d(Config.TAG,"isLoad="+isLoad);
+                if(position <=3){
+                    if(isLoad == true){
+                        Toast.makeText(getApplicationContext(), getResources().getString
+                                (R.string.page_load), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
                 Intent list;
                 switch (position){
                     case 0:
@@ -113,16 +131,19 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                 }
             }
         });
-
-        initReloadView();
-        button_reload.setVisibility(View.GONE);
-        tipReload.setText(R.string.start_reload);
-        refreshingReload.setVisibility(View.VISIBLE);
-
-        loadData(ScrollListView.LOADFIRST);
     }
 
+    /*
+        开启线程，读取数据
+     */
     private void loadData(int what){
+
+        if(isLoad == true){
+            return;
+        }
+        //开始加载
+        isLoad = true;
+
         //启动线程
         strs.clear();
         this.what = what;
@@ -180,6 +201,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private Handler mHandler = new Handler() {
         public void handleMessage (Message msg) {//此方法在ui线程运行
             switch(msg.what) {
+
                 case Config.SUCCESS:
 
                     //如果我是第一次加载或是刷新
@@ -188,7 +210,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         if(dataItems.size()>0) {
                             dataItems.clear();
                         }
-                        System.out.println(dataItems);
                     }
                     dataItems.addAll((ArrayList<String[]>) strs.clone());
 
@@ -236,16 +257,21 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                             (R.string.page_full), Toast.LENGTH_SHORT).show();
                     break;
                 case Config.FAILURE_NET_ERROR:
+
+                    forumList.onRefreshComplete();
                     //加载失败，请重新尝试
                     initReloadView();
                     //init
                     button_reload.setVisibility(View.VISIBLE);
                     tipReload.setText(R.string.page_load_failure);
                     refreshingReload.setVisibility(View.GONE);
-
+                    Log.d(Config.TAG,"进入重新加载页面");
                     button_reload.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
+                            isLoad = true;
+
                             v.setVisibility(View.GONE);
                             tipReload.setText(R.string.start_reload);
                             refreshingReload.setVisibility(View.VISIBLE);
@@ -253,16 +279,19 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         }
                     });
                     break;
+                default:
+                    break;
             }
+            isLoad = false;  //解锁
         }
+
     };
     class MyThread implements Runnable{
 
         public void run(){
-            //if(strs.size()>0){
-              //  strs.clear();
-            //}
+
             String url = Config.FORUM_URL;
+            Integer originalPage = page;
             if(what == ScrollListView.LOAD) {
                 //加载分页的数据
                 page++;
@@ -287,6 +316,8 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             //}
             //Log.d(Config.TAG,string);
             if(string == "net_error"){
+                page = originalPage;    //如果之前分页有过变动，回归原始的page
+                Log.d(Config.TAG,"产生了网络问题，将重新加载");
                 mHandler.obtainMessage(Config.FAILURE_NET_ERROR).sendToTarget();
                 return;
             }
@@ -337,6 +368,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
     @Override
     public void onLoad(){
+        Log.d(Config.TAG,"onLoad事件启动？");
         loadData(ScrollListView.LOAD);
     }
 }

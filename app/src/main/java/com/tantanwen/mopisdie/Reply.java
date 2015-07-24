@@ -1,6 +1,9 @@
 package com.tantanwen.mopisdie;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -12,9 +15,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.tantanwen.mopisdie.http.Url;
+import com.tantanwen.mopisdie.utils.AESCoder;
+import com.tantanwen.mopisdie.utils.Config;
+
+import org.apache.http.NameValuePair;
 
 import java.io.IOException;
+import java.util.List;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -27,6 +39,14 @@ public class Reply extends AppCompatActivity {
     private String quote;
     private WebView webQuote;
     private Button clearQuoteButton;
+    private EditText message;
+    private EditText aboutlink;
+    private EditText imglink;
+    private CheckBox ifanonymity;
+    private CheckBox disableUpdate;
+    private EditText sendcredits;
+    private boolean isPost = false;
+    private String tid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +54,28 @@ public class Reply extends AppCompatActivity {
         setContentView(R.layout.activity_reply);
 
         Intent intent = getIntent();
-        quote = intent.getStringExtra("quote");
+        quote   = intent.getStringExtra("quote");
+        tid     = intent.getStringExtra("tid");
+
+        if(tid == null){
+            Toast.makeText(getApplicationContext(), getResources().getString
+                    (R.string.parameter_error), Toast.LENGTH_LONG).show();
+            finish();
+        }
         System.out.println(quote);
 
         //获得所有的控件
-        sig     = (CheckBox)findViewById(R.id.sig);    //是否签名
-        face1   = (Spinner) findViewById(R.id.face1);
-        face2   = (Spinner) findViewById(R.id.face2);
-        face3   = (Spinner) findViewById(R.id.face3);
-        webQuote = (WebView)findViewById(R.id.webQuote);
+        message         = (EditText)findViewById(R.id.message);
+        aboutlink       = (EditText)findViewById(R.id.aboutlink);
+        imglink         = (EditText)findViewById(R.id.imglink);
+        face1           = (Spinner) findViewById(R.id.face1);
+        face2           = (Spinner) findViewById(R.id.face2);
+        face3           = (Spinner) findViewById(R.id.face3);
+        ifanonymity     = (CheckBox)findViewById(R.id.ifanonymity);
+        disableUpdate   = (CheckBox)findViewById(R.id.disable_update);
+        sig             = (CheckBox)findViewById(R.id.sig);    //是否签名
+        sendcredits     = (EditText)findViewById(R.id.sendcredits);
+        webQuote        = (WebView)findViewById(R.id.webQuote);
 
         if(quote != null){
             webQuote.loadData(quote,"text/html; charset=UTF-8",null);
@@ -75,10 +108,90 @@ public class Reply extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                System.out.println("我被点了");
-                return false;
+
+           if(message.getText().length()<=0){
+                Toast.makeText(getApplicationContext(), getResources().getString
+                            (R.string.empty_message), Toast.LENGTH_LONG).show();
+           }else {
+
+               if(isPost == true){
+                   Toast.makeText(getApplicationContext(), getResources().getString
+                           (R.string.page_submit_now), Toast.LENGTH_LONG).show();
+               }else {
+                   isPost = true;
+                   //启动线程
+                   MyThread myThread = new MyThread();
+                   Thread td1 = new Thread(myThread);
+                   td1.start();
+               }
+           }
+            return false;
             }
         });
+    }
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage (Message msg) {//此方法在ui线程运行
+
+            switch(msg.what) {
+                case 1001:
+                    break;
+                default:
+                    break;
+            }
+
+            isPost = false;
+        }
+    };
+
+    class MyThread implements Runnable{
+
+        public void run(){
+            postData();
+        }
+    };
+    private void postData(){
+
+        Url.getInstance().setUrl(Config.POST_REPLY_URL);
+        Url.getInstance().addParameter("tid", tid);
+        Url.getInstance().addParameter("fid", "1");
+        Url.getInstance().addParameter("message", String.valueOf(message.getText()));
+        Url.getInstance().addParameter("aboutlink", String.valueOf(aboutlink.getText()));
+        Url.getInstance().addParameter("imglink", String.valueOf(imglink.getText()));
+        Url.getInstance().addParameter("face1", String.valueOf(f[face1.getSelectedItemPosition()]));
+        Url.getInstance().addParameter("face2", String.valueOf(f[face2.getSelectedItemPosition()]));
+        Url.getInstance().addParameter("face3", String.valueOf(f[face3.getSelectedItemPosition()]));
+        if(ifanonymity.isChecked() == true){
+            Url.getInstance().addParameter("ifanonymity", "1");
+        }
+        if(disableUpdate.isChecked() == true){
+            Url.getInstance().addParameter("disableUpdate", "1");
+        }
+        if(sig.isChecked() == true){
+            Url.getInstance().addParameter("sig", "1");
+        }
+        Url.getInstance().addParameter("sendcredits", String.valueOf(sendcredits.getText()));
+        Url.getInstance().addParameter("quot_message", quote);
+
+        String string = Url.getInstance().doPost();
+        System.out.println(string);
+        //<div class="tips_content">您的回复已经发布，现在将进入帖子。<p>
+        //<div class="tips_content"><span class="pink">请填写好回复内容。</span><p>
+        Integer offset;
+        offset = string.indexOf("<div class=\"tips_content\">您的回复已经发布，现在将进入帖子。<p>");
+        if(offset>0){
+            //发送成功
+            //要将现在的内容清空掉
+        }else{
+            offset = string.indexOf("<div class=\"tips_content\"><span class=\"pink\">请填写好回复内容。</span><p>");
+            if(offset>0){
+                //没填内容
+            }else{
+                //发送失败，请重新尝试
+                //将发送的数据保存下来
+            }
+        }
+        mHandler.obtainMessage(Config.FAILURE_LOGIN_INFO).sendToTarget();
     }
 
     private void initCheckBox(){

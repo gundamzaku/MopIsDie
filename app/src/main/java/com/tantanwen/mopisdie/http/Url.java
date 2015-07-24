@@ -74,6 +74,10 @@ public class Url {
         params.add(new BasicNameValuePair(name, value));
     }
 
+    public List<NameValuePair> getParameter(){
+        return params;
+    }
+
     public String doGet(){
 
         // 实例化HTTP方法
