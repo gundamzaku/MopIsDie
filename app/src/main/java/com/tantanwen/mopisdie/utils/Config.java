@@ -17,10 +17,11 @@ public class Config {
     public static String POST_REPLY_URL = HOST+"/post.asp?action=newreply";
 
     //定义成功的操作符
-    public static final int SUCCESS               = 1001;
-    public static final int SUCCESS_02            = 2001;
+    public static final int SUCCESS                 = 1001;
+    public static final int SUCCESS_02              = 2001;
     public static final int SUCCESS_FULL_PAGE     = 2002;
-    public static final int FAILURE               = 9999;
-    public static final int FAILURE_LOGIN_INFO    = 1002;
-    public static final int FAILURE_NET_ERROR     = 1003;
+    public static final int FAILURE                 = 9999;
+    public static final int FAILURE_LOGIN_INFO      = 1002;
+    public static final int FAILURE_NET_ERROR       = 1003;
+    public static final int FAILURE_MESSAGE_EMPTY    = 1004;
 }
