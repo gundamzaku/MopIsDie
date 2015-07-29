@@ -1,6 +1,10 @@
 package com.tantanwen.mopisdie;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,11 +12,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tantanwen.mopisdie.adapter.PmMessageAdapter;
 import com.tantanwen.mopisdie.adapter.PmMessageContainer;
+import com.tantanwen.mopisdie.http.Url;
+import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.Utils;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,11 +63,17 @@ public class PmMessage extends AppCompatActivity {
     private String content;
     private int pmid;
     private String sendTime;
+    private TextView tvUsername;
+    private LinearLayout rlBottom;
+    private Context mContext;
+    private String contString;
+    private Button mBtnDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pm_message);
+        mContext = this;
 
         Intent intent =getIntent();
 
@@ -64,11 +82,6 @@ public class PmMessage extends AppCompatActivity {
         content     = intent.getStringExtra("content");
         pmid         = intent.getIntExtra("pmid", 0);
         sendTime    = intent.getStringExtra("sendTime");
-        System.out.println(userNick);
-        System.out.println(re);
-        System.out.println(content);
-        System.out.println(pmid);
-        System.out.println(sendTime);
 
         initView();
         initData();
@@ -83,6 +96,15 @@ public class PmMessage extends AppCompatActivity {
             public void onClick(View v) {
                 //发送
                 send();
+            }
+        });
+
+        mBtnDelete = (Button)findViewById(R.id.btn_delete);
+        mBtnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("发送删除");
+                delete();
             }
         });
         mEditTextContent = (EditText) findViewById(R.id.et_sendmessage);
@@ -118,19 +140,130 @@ public class PmMessage extends AppCompatActivity {
 
     private void send(){
 
-        String contString = mEditTextContent.getText().toString();
+        contString = mEditTextContent.getText().toString();
         if (contString.length() > 0) {
+            tvUsername = (TextView)findViewById(R.id.tv_username);
+            rlBottom = (LinearLayout)findViewById(R.id.rl_bottom);
+            rlBottom.setVisibility(View.INVISIBLE);
+
             PmMessageContainer entity = new PmMessageContainer();
             entity.setDate(Utils.getDate());
-            entity.setName("");
+            entity.setName("");    //这里我改成显示状态了
             entity.setMsgType(false);
             entity.setText(contString);
             mDataArrays.add(entity);
             mAdapter.notifyDataSetChanged();
+
             mEditTextContent.setText("");
-            mListView.setSelection(mListView.getCount() - 1);
+            //发送中
+            mDataArrays.get(mListView.getCount() - 1).setName(mContext.getResources().getString(R.string.send_now));
+
+            //启动发送的线程
+            MyThread myThread = new MyThread();
+            Thread td1 = new Thread(myThread);
+            td1.start();
         }
     }
+
+    private void delete(){
+
+        rlBottom = (LinearLayout)findViewById(R.id.rl_bottom);
+        rlBottom.setVisibility(View.INVISIBLE);
+        //启动发送的线程
+        MyThreadDel myThreadDel = new MyThreadDel();
+        Thread td1 = new Thread(myThreadDel);
+        td1.start();
+
+    }
+
+    private Handler mHandler = new Handler() {
+        public void handleMessage (Message msg) {//此方法在ui线程运行
+
+            switch(msg.what) {
+                case Config.SUCCESS:
+                    mDataArrays.get(mListView.getCount() - 1).setName(mContext.getResources().getString(R.string.send_done));
+                    break;
+                case Config.FAILURE_MESSAGE_EMPTY:
+                    mDataArrays.get(mListView.getCount() - 1).setName(mContext.getResources().getString(R.string.send_failed));
+                    break;
+                case Config.FAILURE_LOGIN_INFO:
+                    mDataArrays.get(mListView.getCount() - 1).setName(mContext.getResources().getString(R.string.send_failed));
+                    break;
+                default:
+                    break;
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+    };
+
+    private Handler mHandlerDel = new Handler() {
+        public void handleMessage (Message msg) {//此方法在ui线程运行
+
+            switch(msg.what) {
+                case Config.SUCCESS:
+                    finish();
+                    break;
+                case Config.FAILURE_MESSAGE_EMPTY:
+                    Toast.makeText(getApplicationContext(), getResources().getString
+                            (R.string.delete_failed), Toast.LENGTH_LONG).show();
+                    break;
+                case Config.FAILURE_LOGIN_INFO:
+                    Toast.makeText(getApplicationContext(), getResources().getString
+                            (R.string.delete_failed), Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    class MyThread implements Runnable{
+
+        public void run(){
+            System.out.println("发送");
+            Url.getInstance().setUrl(Config.POST_MESSAGE_URL);
+            Url.getInstance().addParameter("pmid", String.valueOf(pmid));
+            Url.getInstance().addParameter("btnreply", "回复");
+            Url.getInstance().addParameter("message",contString );
+            Url.getInstance().addParameter("posttime", Utils.getDate());
+            String string = Url.getInstance().doPost();
+            Integer offset;
+
+            offset = string.indexOf("<span class=\"pink\">请填写好回复内容。</span>");
+            if(offset>0){
+                //发送失败
+                mHandler.obtainMessage(Config.FAILURE_MESSAGE_EMPTY).sendToTarget();
+            }else{
+                //发送成功？
+                offset = string.indexOf("<hr color=\"black\" />");
+                if(offset>0){
+                    mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
+                }else{
+                    mHandler.obtainMessage(Config.FAILURE_MESSAGE_EMPTY).sendToTarget();
+                }
+            }
+        }
+    };
+
+    class MyThreadDel implements Runnable{
+
+        public void run(){
+            System.out.println("删除");
+            Url.getInstance().setUrl(Config.POST_MESSAGE_URL);
+            Url.getInstance().addParameter("pmid", String.valueOf(pmid));
+            Url.getInstance().addParameter("btndelete", "删除");
+            String string = Url.getInstance().doPost();
+            Integer offset;
+            //发送成功？
+            offset = string.indexOf("<body class=\"blankbg\">");
+
+            if(offset>0){
+                mHandlerDel.obtainMessage(Config.SUCCESS).sendToTarget();
+            }else{
+                mHandlerDel.obtainMessage(Config.FAILURE_MESSAGE_EMPTY).sendToTarget();
+            }
+        }
+    };
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

@@ -50,7 +50,6 @@ public class Pm extends AppCompatActivity {
         public void handleMessage (Message msg) {//此方法在ui线程运行
             switch(msg.what) {
                 case 1001:
-                    System.out.println("开始");
 
                     PmAdapter adapter = new PmAdapter(mContext);
                     adapter.setItems(strs);

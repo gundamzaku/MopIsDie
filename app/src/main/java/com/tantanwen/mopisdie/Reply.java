@@ -181,12 +181,14 @@ public class Reply extends AppCompatActivity {
     private void successMessage(){
         Log.d(Config.TAG,"send done");
         mBuilder.build().contentView.setTextViewText(R.id.content_view_text1,"发送完成");
+        mBuilder.setTicker("回复发送成功");
         mBuilder.setSmallIcon(R.drawable.ok);
         monitorProgress();
     }
     private void failureMessage(){
         Log.d(Config.TAG,"send done");
         mBuilder.build().contentView.setTextViewText(R.id.content_view_text1,"发送失败");
+        mBuilder.setTicker("回复发送失败");
         mBuilder.setSmallIcon(R.drawable.notok);
         monitorProgress();
         //将数据写入临时文件中去
@@ -203,16 +205,16 @@ public class Reply extends AppCompatActivity {
     private void notificationInit(){
         //通知栏内显示下载进度条
         Intent intent=new Intent(this,Reply.class);//点击进度条，进入程序
-        PendingIntent pIntent=PendingIntent.getActivity(this, 0, intent, 0);
+        //PendingIntent pIntent=PendingIntent.getActivity(this, 0, intent, 0);
         RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.status_bar_message_topic);//通知栏中进度布局
         mNotificationManager=(NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(Reply.this);
         mBuilder.setSmallIcon(R.drawable.send);
+        mBuilder.setTicker("发送回复");
         mBuilder.setContentTitle("hello world");
         mBuilder.setContentText("no,you are stupid");
         mBuilder.setContent(remoteViews);
         //mBuilder.setContentIntent(pIntent);
-
     }
     private void postData(){
 
@@ -236,8 +238,7 @@ public class Reply extends AppCompatActivity {
         }
         Url.getInstance().addParameter("sendcredits", String.valueOf(sendcredits.getText()));
         Url.getInstance().addParameter("quot_message", quote);
-        String string = "";
-        //String string = Url.getInstance().doPost();
+        String string = Url.getInstance().doPost();
         //System.out.println(string);
         //String string = "<div class=\"tips_content\">您的回复已经发布，现在将进入帖子。<p>";
         //<div class="tips_content">您的回复已经发布，现在将进入帖子。<p>

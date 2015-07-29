@@ -13,8 +13,9 @@ public class Config {
     public static String VIEW_TOPIC_URL = HOST+"/viewtopic.asp?fid=1&tid=";
     public static String VIEW_TOPIC_CP_URL = HOST+"/topiccp.asp?action=ajaxquot";
     public static String VIEW_PM_URL = HOST+"/pm.asp";
-
     public static String POST_REPLY_URL = HOST+"/post.asp?action=newreply";
+    public static String POST_NEW_URL = HOST+"/post.asp?action=newtopic";
+    public static String POST_MESSAGE_URL = HOST+"/pm.asp?action=reply";
 
     //定义成功的操作符
     public static final int SUCCESS                 = 1001;

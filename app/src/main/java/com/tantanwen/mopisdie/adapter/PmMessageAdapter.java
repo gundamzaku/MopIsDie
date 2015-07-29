@@ -101,7 +101,6 @@ public class PmMessageAdapter extends BaseAdapter {
 
         return convertView;
     }
-
     //通过ViewHolder显示项的内容
     static class ViewHolder {
         public TextView tvSendTime;
