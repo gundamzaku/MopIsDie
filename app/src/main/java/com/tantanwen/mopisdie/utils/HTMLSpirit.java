@@ -75,6 +75,7 @@ public class HTMLSpirit{
         */
         source = source.replace("&amp;", "&");
         source = source.replace("&quot;", "\"");
+        source = source.replace("&#39;", "'");
         source = source.replace("&lt;", "<");
         source = source.replace("&gt;", ">");
         //System.out.println("这个是："+source);
