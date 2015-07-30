@@ -16,6 +16,8 @@ public class Config {
     public static String POST_REPLY_URL = HOST+"/post.asp?action=newreply";
     public static String POST_NEW_URL = HOST+"/post.asp?action=newtopic";
     public static String POST_MESSAGE_URL = HOST+"/pm.asp?action=reply";
+    public static String POST_TOPICEDIT_URL = HOST+"/topicedit.asp?pid=";
+    public static String POST_TOPIC_MODIFY_URL = HOST+"/topicedit.asp?action=submitmodify";
 
     //定义成功的操作符
     public static final int SUCCESS                 = 1001;
@@ -25,4 +27,5 @@ public class Config {
     public static final int FAILURE_LOGIN_INFO      = 1002;
     public static final int FAILURE_NET_ERROR       = 1003;
     public static final int FAILURE_MESSAGE_EMPTY    = 1004;
+    public static final int FAILURE_REGIST_NOOPEN    = 1005;    //未开发登记
 }

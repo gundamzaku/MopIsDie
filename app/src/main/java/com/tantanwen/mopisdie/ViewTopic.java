@@ -170,7 +170,10 @@ public class ViewTopic extends AppCompatActivity {
                         }
                     }
                     //return shows3
-                    string = string.replaceAll("return shows3","return injectedObject.shows3");
+                    string = string.replaceAll("<a href=\"topicedit.asp\\?pid=(.*?)\" class=\"showun\" onclick=\"return shows3\\(this.href\\);\">","<a href=\"topicedit.asp\" class=\"showun\" onclick=\"return injectedObject.shows3(\'$1\');\">");
+                    //string = string.replaceAll("<a href=\"topicedit.asp\\?pid=(.*?)\" class=\"showun\" onclick=\"return shows3(this.href);\">","123123");
+                    System.out.println(string);
+                    //string = string.replaceAll("return shows3","return injectedObject.shows3");
                     string = string.replaceAll("return shows","return injectedObject.shows");
                     string = string.replaceAll("onclick=\"showquot","onclick=\"injectedObject.showquot");
 
@@ -199,7 +202,7 @@ public class ViewTopic extends AppCompatActivity {
                         string = string.replaceAll("<img src=[\"|'](attachments|face)/(.*?)[\"|'](.*?)/>","<img src=\""+Config.HOST+"/$1/$2\"$3>");
                     }
                     string += "<script type=\"text/javascript\" src=\"file:///android_asset/init.js\"></script>";
-                    //System.out.println(string);
+                    System.out.println(string);
                     webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
                     //webView.loadUrl("javascript:alert(injectedObject.toString())");
                     //Log.d(Config.TAG,"结束");
@@ -227,9 +230,14 @@ public class ViewTopic extends AppCompatActivity {
 
     class JsObject {
         @JavascriptInterface
-        public boolean shows3(Objects href) {
+        public boolean shows3(String pid) {
+            System.out.println(pid);
+            //页面跳转，并把值带过去
 
-            Toast.makeText(getApplicationContext(), "这有啥好看的？看自己小鸡鸡去。", Toast.LENGTH_SHORT).show();
+            Intent list = new Intent(mContext,MyTopic.class);
+            list.putExtra("pid",pid);
+            mContext.startActivity(list);
+            //Toast.makeText(getApplicationContext(), "这有啥好看的？看自己小鸡鸡去。", Toast.LENGTH_SHORT).show();
             return false;
         }
         @JavascriptInterface
