@@ -99,6 +99,8 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                     case 2:
                         //查询
                         //进入一个新的查询页面去
+                        list = new Intent(mContext,Search.class);
+                        mContext.startActivity(list);
                         break;
                     case 3: //设置
                         //加载PrefFragment

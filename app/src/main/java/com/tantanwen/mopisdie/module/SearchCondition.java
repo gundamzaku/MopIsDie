@@ -1,10 +1,14 @@
 package com.tantanwen.mopisdie.module;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.tantanwen.mopisdie.Search;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by gundamzaku on 2015/7/31.
@@ -44,25 +48,38 @@ public class SearchCondition implements Runnable{
 
     public void run(){
         lockStatus();
-        Url.getInstance().setUrl(Config.SEARCH_URL);
 
+        //http://www.fuyuncun.com/search.asp?action=search&keyword=nexus&searchtype=title
         Url.getInstance().addParameter("action", "search");
         if(this.type == 1){ //普通条件查询
 
-            Url.getInstance().addParameter("keyword", this.keyword);
-            Url.getInstance().addParameter("searchtype", this.searchType);
-            Url.getInstance().addParameter("submit", "搜索");
+            //Url.getInstance().addParameter("keyword", this.keyword);
+            //Url.getInstance().addParameter("searchtype", this.searchType);
+            //Url.getInstance().addParameter("submit", "搜索");
+            Url.getInstance().setUrl(Config.SEARCH_URL+"?action=search&keyword="+this.keyword+"&searchtype="+this.searchType);
 
         }else if(this.type == 2){   //自回
-            Url.getInstance().setUrl(Config.SEARCH_URL+"?action=myposts");
+            Url.getInstance().setUrl(Config.SEARCH_MYPOST_URL);
         }else if(this.type == 3){   //自发
-            Url.getInstance().setUrl(Config.SEARCH_URL+"?action=mytopics");
+            Url.getInstance().setUrl(Config.SEARCH_MYTOPIC_URL);
         }
         System.out.println(Url.getInstance().getParameter());
         string = Url.getInstance().doGet();
-
+        if(this.type == 1){
+           //<div class="tips_content">搜索完成，请点击这里查看搜索结果。<p><a href="?searchid=5569" target="_self">如果您的浏览器没有跳转，请点击这里。</a>
+           Pattern p = Pattern.compile("<div class=\"tips_content\">搜索完成，请点击这里查看搜索结果。<p><a href=\"\\?searchid=(.*?)\" target=\"_self\">如果您的浏览器没有跳转，请点击这里。</a>");
+           Matcher m = p.matcher(string);
+           if(m.find() == true) {
+               //再发一次线程的请求
+               Url.getInstance().setUrl(Config.SEARCH_URL+"?searchid="+m.group(1));
+               string = Url.getInstance().doGet();
+               System.out.println(string);
+           }
+        }else {
+            System.out.println(string);
+        }
         //需要解析是否是登录成功
-        System.out.println(Config.SEARCH_URL);
+        //System.out.println(string);
         this.mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
         //Log.d(Config.TAG,""+string);
     }
