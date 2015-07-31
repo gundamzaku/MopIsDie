@@ -96,7 +96,11 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         list = new Intent(mContext,Pm.class);
                         mContext.startActivity(list);
                         break;
-                    case 2: //设置
+                    case 2:
+                        //查询
+                        //进入一个新的查询页面去
+                        break;
+                    case 3: //设置
                         //加载PrefFragment
                         list = new Intent(mContext,Prefs.class);
                         mContext.startActivity(list);
@@ -109,7 +113,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         transaction.commit();
                         */
                         break;
-                    case 3:
+                    case 4:
                         loadData(ScrollListView.LOADFIRST);
                         initReloadView();
                         button_reload.setVisibility(View.GONE);
@@ -120,10 +124,10 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         forumList.setVisibility(View.GONE);
                         mDrawerLayout.closeDrawers();
                         break;
-                    case 4:
+                    case 5:
                         finish();
                         break;
-                    case 5:
+                    case 6:
                         finish();
                         break;
                     default:

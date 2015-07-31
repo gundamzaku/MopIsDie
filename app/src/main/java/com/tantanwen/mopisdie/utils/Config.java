@@ -18,6 +18,7 @@ public class Config {
     public static String POST_MESSAGE_URL = HOST+"/pm.asp?action=reply";
     public static String POST_TOPICEDIT_URL = HOST+"/topicedit.asp?pid=";
     public static String POST_TOPIC_MODIFY_URL = HOST+"/topicedit.asp?action=submitmodify";
+    public static String SEARCH_URL = HOST+"/search.asp";
 
     //定义成功的操作符
     public static final int SUCCESS                 = 1001;

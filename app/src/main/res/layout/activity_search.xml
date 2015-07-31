@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/repeat_bg"
+    android:tileMode="repeat"
+    android:baselineAligned="false">
+
+    <include android:id="@+id/id_toolbar" layout="@layout/inc_toolbar" />
+    <LinearLayout
+        android:id="@+id/forum_layout"
+        android:layout_width="match_parent"
+        android:layout_height="359dp"
+        android:orientation="vertical"
+        android:background="#fff">
+        <com.tantanwen.mopisdie.widget.ScrollListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/forum_list"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/keyword"
+                android:layout_gravity="bottom"
+                android:layout_weight="1" />
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/searchtype"
+                android:entries="@array/search_types_desc"
+                android:layout_gravity="bottom"
+                android:layout_weight="3" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="查询"
+                android:id="@+id/button_search"
+                android:layout_weight="1" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="自发"
+                android:id="@+id/button_my_send"
+                android:layout_weight="1" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="自回"
+                android:id="@+id/button_my_reply"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

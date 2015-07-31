@@ -12,6 +12,7 @@
     <string name="empty_username">请输入用户名</string>
     <string name="empty_password">请输入用户密码</string>
     <string name="page_load">页面加载中…</string>
+    <string name="repeat_submit">请勿重复提交</string>
 
     <!--page-->
     <string name="page_full">我累了，不想再加载了</string>
@@ -28,14 +29,15 @@
     <string-array name="array_left_menu_forum">
         <item id="1">发帖</item>
         <item id="2">传呼</item>
-        <item id="3">设置</item>
-        <item id="4">刷新</item>
-        <item id="5">注销</item>
-        <item id="6">退出</item>
+        <item id="3">查询</item>
+        <item id="4">设置</item>
+        <item id="5">刷新</item>
+        <item id="6">注销</item>
+        <item id="7">退出</item>
     </string-array>
     <string-array name="array_left_menu_topic">
         <item id="1">回复</item>
-        <item id="1">刷新</item>
+        <item id="2">刷新</item>
     </string-array>
     <string name="title_activity_reply">回帖</string>
     <string name="submit_button">提交</string>
@@ -80,5 +82,6 @@
     <string name="send_failed">发送失败</string>
     <string name="delete_failed">删除失败</string>
     <string name="title_activity_my_topic">我的回复</string>
+    <string name="title_activity_search">Search</string>
     <!-- -->
 </resources>

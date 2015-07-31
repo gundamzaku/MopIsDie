@@ -1,10 +1,11 @@
 package com.tantanwen.mopisdie;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,7 +21,6 @@ import android.widget.Toast;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.HTMLSpirit;
-import com.tantanwen.mopisdie.utils.Utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +46,11 @@ public class MyTopic extends AppCompatActivity {
         Intent intent = getIntent();
         pid = intent.getStringExtra("pid");
 
+        loadData();
+
+    }
+
+    private void loadData(){
         System.out.println("到这个页面我的pid是："+pid);
         message = (EditText)findViewById(R.id.message);
         buttonDelete = (Button)findViewById(R.id.button_delete);
@@ -185,6 +190,54 @@ public class MyTopic extends AppCompatActivity {
         }
     };
 
+    private Handler mHandlerDelete = new Handler() {
+        public void handleMessage (Message msg) {//此方法在ui线程运行
+
+            switch(msg.what) {
+                case Config.SUCCESS:
+                    loadingText.setText("删除完成，您可以关闭窗口并刷新");
+                    break;
+                case Config.FAILURE_MESSAGE_EMPTY:
+                    LoadingMyTopic.setVisibility(View.GONE);
+                    Toast.makeText(getApplicationContext(), getResources().getString
+                            (R.string.delete_failed), Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    class DeleteThread implements Runnable{
+
+        public void run(){
+            //?action=submitmodify
+            System.out.println("删除");
+            Url.getInstance().setUrl(Config.POST_TOPIC_MODIFY_URL);
+            Url.getInstance().addParameter("fid","1");
+            Url.getInstance().addParameter("pid", pid);
+            Url.getInstance().addParameter("btndelete", "删除回复");
+            System.out.println(Url.getInstance().getParameter());
+            String string = Url.getInstance().doPost();
+            System.out.print(string);
+            Integer offset;
+
+            offset = string.indexOf("<div class=\"tips_header\"><h1>提示信息</h1></div><div class=\"tips_content\">您的回复已经成功删除。<p>");
+            if(offset>0){
+                //发送失败
+                mHandlerDelete.obtainMessage(Config.SUCCESS).sendToTarget();
+            }else{
+                //发送成功？
+                offset = string.indexOf("<div class=\"tips_content\"><span class=\"pink\">回复不存在或者已经被删除。</span>");
+                if(offset>0){
+                    mHandlerDelete.obtainMessage(Config.FAILURE_MESSAGE_EMPTY).sendToTarget();
+                }else{
+                    mHandlerDelete.obtainMessage(Config.FAILURE_MESSAGE_EMPTY).sendToTarget();
+                }
+            }
+        }
+    };
+
     private void dialog(){
 
         AlertDialog.Builder builder=new AlertDialog.Builder(this);  //先得到构造器
@@ -194,9 +247,16 @@ public class MyTopic extends AppCompatActivity {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() { //设置确定按钮
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 System.out.println("已经删除");
-                finish();
+                LoadingMyTopic.setVisibility(View.VISIBLE);
+                loadingText.setText("正在删除中……");
+
+                DeleteThread deleteThread = new DeleteThread();
+                Thread td1 = new Thread(deleteThread);
+                td1.start();
                 dialog.dismiss(); //关闭dialog
+
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() { //设置取消按钮

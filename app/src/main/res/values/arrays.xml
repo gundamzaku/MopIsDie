@@ -35,4 +35,12 @@
         <item value="100000">100000</item>
         <item value="1000000">1000000</item>
     </string-array>
+    <string-array name="search_types_desc">
+        <item>标题</item>
+        <item>作者</item>
+    </string-array>
+    <string-array name="search_types">
+        <item>title</item>
+        <item>author</item>
+    </string-array>
 </resources>

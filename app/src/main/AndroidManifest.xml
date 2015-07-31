@@ -11,10 +11,7 @@
         android:label="@string/app_slogan"
         android:theme="@style/AppTheme" >
         <activity android:name=".Main" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".Forum"
@@ -46,6 +43,15 @@
         <activity
             android:name=".MyTopic"
             android:label="@string/title_activity_my_topic" >
+        </activity>
+        <activity
+            android:name=".Search"
+            android:label="@string/title_activity_search" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

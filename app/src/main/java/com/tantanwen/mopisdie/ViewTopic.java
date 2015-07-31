@@ -50,6 +50,7 @@ public class ViewTopic extends AppCompatActivity {
     private Button button_reload;
     private TextView tipReload;
     private ProgressBar refreshingReload;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +83,19 @@ public class ViewTopic extends AppCompatActivity {
                         //View layout = inflater.inflate(R.layout.activity_reply,(ViewGroup) findViewById(R.id.dialog));
                         //new AlertDialog.Builder(mContext).setTitle("我要回复").setView(layout).setPositiveButton("确定", null).setNegativeButton("取消", null).show();
                         break;
+                    case 1:
+                        loadData();
+                        mDrawerLayout.closeDrawers();
+                        break;
                     default:
                         break;
                 }
             }
         });
 
+        loadData();
+    }
+    private void loadData(){
         initReloadView();
         button_reload.setVisibility(View.GONE);
         tipReload.setText(R.string.start_reload);
@@ -98,6 +106,7 @@ public class ViewTopic extends AppCompatActivity {
         Thread td1 = new Thread(myThread);
         td1.start();
     }
+
     private void initToolBar(){
 
         toolbar = (Toolbar)findViewById(R.id.id_toolbar);
@@ -106,7 +115,7 @@ public class ViewTopic extends AppCompatActivity {
     }
     private void initDrawer(){
 
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open, R.string.close);
         mDrawerToggle.syncState();
