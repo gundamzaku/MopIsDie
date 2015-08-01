@@ -202,7 +202,6 @@ public class ViewTopic extends AppCompatActivity {
                     //return shows3
                     string = string.replaceAll("<a href=\"topicedit.asp\\?pid=(.*?)\" class=\"showun\" onclick=\"return shows3\\(this.href\\);\">","<a href=\"topicedit.asp\" class=\"showun\" onclick=\"return injectedObject.shows3(\'$1\');\">");
                     //string = string.replaceAll("<a href=\"topicedit.asp\\?pid=(.*?)\" class=\"showun\" onclick=\"return shows3(this.href);\">","123123");
-                    System.out.println(string);
                     //string = string.replaceAll("return shows3","return injectedObject.shows3");
                     string = string.replaceAll("return shows","return injectedObject.shows");
                     string = string.replaceAll("onclick=\"showquot","onclick=\"injectedObject.showquot");
@@ -253,7 +252,6 @@ public class ViewTopic extends AppCompatActivity {
                         //页面跳转，并把值带过去
                         Intent list = new Intent(mContext,Reply.class);
                         list.putExtra("tid",tid);
-                        System.out.println("tid is "+tid);
                         list.putExtra("quote",quote);
                         mContext.startActivity(list);
                     }
@@ -265,7 +263,6 @@ public class ViewTopic extends AppCompatActivity {
     class JsObject {
         @JavascriptInterface
         public boolean shows3(String pid) {
-            System.out.println(pid);
             //页面跳转，并把值带过去
 
             Intent list = new Intent(mContext,MyTopic.class);

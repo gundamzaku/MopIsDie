@@ -2,6 +2,7 @@ package com.tantanwen.mopisdie;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.tantanwen.mopisdie.adapter.ForumAdapter;
 import com.tantanwen.mopisdie.http.Url;
@@ -32,11 +32,7 @@ import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.FilesCache;
 import com.tantanwen.mopisdie.widget.ScrollListView;
 
-import org.json.JSONArray;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -146,6 +142,13 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         mDrawerLayout.closeDrawers();
                         break;
                     case 5:
+                        //将帐号信息全消除
+                        SharedPreferences sp = getSharedPreferences("login_info", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.remove("username");
+                        editor.remove("password");
+                        editor.commit();
+                        Url.clearInstance();
                         finish();
                         break;
                     case 6:
@@ -181,7 +184,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private void loadDataCache(){
 
         dataItems.addAll(strs);
-        System.out.println("大小？"+dataItems.size());
         adapter = new ForumAdapter(mContext);
         adapter.setItems(dataItems);
         forumList.setAdapter(adapter);
@@ -404,7 +406,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
     @Override
     public void onLoad(){
-        Log.d(Config.TAG,"onLoad事件启动？");
         loadData(ScrollListView.LOAD);
     }
 }

@@ -2,7 +2,6 @@ package com.tantanwen.mopisdie;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,8 +21,6 @@ import com.tantanwen.mopisdie.adapter.PmMessageContainer;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.Utils;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +99,6 @@ public class PmMessage extends AppCompatActivity {
         mBtnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("发送删除");
                 delete();
             }
         });
@@ -220,7 +215,7 @@ public class PmMessage extends AppCompatActivity {
     class MyThread implements Runnable{
 
         public void run(){
-            System.out.println("发送");
+
             Url.getInstance().setUrl(Config.POST_MESSAGE_URL);
             Url.getInstance().addParameter("pmid", String.valueOf(pmid));
             Url.getInstance().addParameter("btnreply", "回复");
@@ -248,7 +243,7 @@ public class PmMessage extends AppCompatActivity {
     class MyThreadDel implements Runnable{
 
         public void run(){
-            System.out.println("删除");
+
             Url.getInstance().setUrl(Config.POST_MESSAGE_URL);
             Url.getInstance().addParameter("pmid", String.valueOf(pmid));
             Url.getInstance().addParameter("btndelete", "删除");

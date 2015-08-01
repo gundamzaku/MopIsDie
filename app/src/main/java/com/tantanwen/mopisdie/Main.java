@@ -24,10 +24,7 @@ import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.AESCoder;
 import com.tantanwen.mopisdie.utils.Config;
 
-import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
-
-import java.util.List;
 import java.util.Map;
 
 public class Main extends AppCompatActivity {
@@ -43,7 +40,6 @@ public class Main extends AppCompatActivity {
     private String usernameText;
     private String passwordText;
     private String deviceId;
-    private String key;
     private Map cookies;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +71,6 @@ public class Main extends AppCompatActivity {
         initToolBar();
         usernameText = sp.getString("username","");
         String passwordTextEncrypt = sp.getString("password","");
-        System.out.println("我的用户名："+usernameText);
-        System.out.println("我的密码"+passwordTextEncrypt);
         if(usernameText.length()>0 && passwordTextEncrypt.length()>0){
             //开始解密码密码
             try {
@@ -153,20 +147,20 @@ public class Main extends AppCompatActivity {
         public void handleMessage (Message msg) {//此方法在ui线程运行
 
             switch(msg.what) {
-                case 1001:
+                case Config.SUCCESS:
                     toForum();
                     break;
-                case 1002:
+                case Config.FAILURE_LOGIN_INFO:
                     initLoginInfo();
                     Toast.makeText(getApplicationContext(), getResources().getString
                             (R.string.login_info_error), Toast.LENGTH_LONG).show();
                     break;
-                case 1003:
+                case Config.FAILURE_NET_ERROR:
                     initLoginInfo();
                     Toast.makeText(getApplicationContext(), getResources().getString
                             (R.string.net_error), Toast.LENGTH_LONG).show();
                     break;
-                case 9999:
+                case Config.FAILURE:
                     initLoginInfo();
                     Toast.makeText(getApplicationContext(), getResources().getString
                             (R.string.login_error), Toast.LENGTH_LONG).show();

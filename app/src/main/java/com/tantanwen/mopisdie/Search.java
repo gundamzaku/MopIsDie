@@ -20,9 +20,7 @@ import android.widget.Toast;
 import com.tantanwen.mopisdie.adapter.ForumAdapter;
 import com.tantanwen.mopisdie.thread.SearchThread;
 import com.tantanwen.mopisdie.utils.Config;
-import com.tantanwen.mopisdie.widget.ScrollListView;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 public class Search extends AppCompatActivity {
@@ -87,12 +85,10 @@ public class Search extends AppCompatActivity {
                     return;
                 }
                 //启动线程
-                System.out.println(searchtype.getSelectedItemId());
                 search.setType(1);
                 search.setKeyword(String.valueOf(keyword.getText()));
                 Resources res =getResources();
                 String[] searchTypes = res.getStringArray(R.array.search_types);
-                System.out.println(searchTypes[searchtype.getSelectedItemPosition()]);
                 search.setSearchType(searchTypes[searchtype.getSelectedItemPosition()]);
                 Thread td = new Thread(search);
                 td.start();
@@ -157,12 +153,12 @@ public class Search extends AppCompatActivity {
     private ForumAdapter adapter;
     public Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {//此方法在ui线程运行
-            System.out.println("结束线程"+msg.what);
+
             search.unLockStatus();
             switch (msg.what){
                 case Config.SUCCESS:
                     strs = search.getData();//得到数据
-                    System.out.println(strs);
+
                     if(adapter == null) {
                         adapter = new ForumAdapter(mContext);
                     }

@@ -9,11 +9,9 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -42,7 +40,6 @@ public class Post extends AppCompatActivity {
     private EditText imglink;
     private CheckBox ifanonymity;
     private CheckBox disableUpdate;
-    private EditText sendcredits;
     private SharedPreferences sp;
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mBuilder;
@@ -91,7 +88,7 @@ public class Post extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                System.out.println(title);
+
                 if(title.getText().length()<=0){
                     Toast.makeText(getApplicationContext(), getResources().getString
                             (R.string.empty_message), Toast.LENGTH_LONG).show();
@@ -147,14 +144,13 @@ public class Post extends AppCompatActivity {
         }
     };
     private void successMessage(){
-        Log.d(Config.TAG, "send done");
+
         mBuilder.build().contentView.setTextViewText(R.id.content_view_text1,"发送完成");
         mBuilder.setSmallIcon(R.drawable.ok);
         mBuilder.setTicker("帖子发送完成");
         monitorProgress();
     }
     private void failureMessage(){
-        Log.d(Config.TAG,"send done");
         mBuilder.build().contentView.setTextViewText(R.id.content_view_text1,"发送失败");
         mBuilder.setSmallIcon(R.drawable.notok);
         mBuilder.setTicker("帖子发送失败");
@@ -221,8 +217,6 @@ public class Post extends AppCompatActivity {
             Url.getInstance().addParameter("sig", "1");
         }
         Url.getInstance().addParameter("price", String.valueOf(price.getSelectedItem().toString()));
-
-        System.out.println(Url.getInstance().getParameter());
 
         String string = Url.getInstance().doPost();
         //System.out.println(string);

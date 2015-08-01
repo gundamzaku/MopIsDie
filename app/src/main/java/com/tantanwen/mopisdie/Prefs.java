@@ -1,14 +1,11 @@
 package com.tantanwen.mopisdie;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v7.app.AppCompatActivity;
 
@@ -58,7 +55,7 @@ public class Prefs extends AppCompatActivity {
 
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,Preference preference) {
-            System.out.println(preference.getKey());
+
             if("load_images_nowifi".equals(preference.getKey())) {
 
 

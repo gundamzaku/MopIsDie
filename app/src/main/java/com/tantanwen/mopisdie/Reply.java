@@ -1,8 +1,6 @@
 package com.tantanwen.mopisdie;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -11,7 +9,6 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,13 +23,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.tantanwen.mopisdie.http.Url;
-import com.tantanwen.mopisdie.utils.AESCoder;
 import com.tantanwen.mopisdie.utils.Config;
 
-import org.apache.http.NameValuePair;
-
 import java.io.IOException;
-import java.util.List;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -57,7 +50,6 @@ public class Reply extends AppCompatActivity {
     private String tid;
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mBuilder;
-    private Context mContext;
     private SharedPreferences sp;
 
     @Override
@@ -179,14 +171,12 @@ public class Reply extends AppCompatActivity {
     };
 
     private void successMessage(){
-        Log.d(Config.TAG,"send done");
         mBuilder.build().contentView.setTextViewText(R.id.content_view_text1,"发送完成");
         mBuilder.setTicker("回复发送成功");
         mBuilder.setSmallIcon(R.drawable.ok);
         monitorProgress();
     }
     private void failureMessage(){
-        Log.d(Config.TAG,"send done");
         mBuilder.build().contentView.setTextViewText(R.id.content_view_text1,"发送失败");
         mBuilder.setTicker("回复发送失败");
         mBuilder.setSmallIcon(R.drawable.notok);

@@ -51,7 +51,6 @@ public class MyTopic extends AppCompatActivity {
     }
 
     private void loadData(){
-        System.out.println("到这个页面我的pid是："+pid);
         message = (EditText)findViewById(R.id.message);
         buttonDelete = (Button)findViewById(R.id.button_delete);
         buttonUpdate = (Button)findViewById(R.id.button_update);
@@ -78,7 +77,6 @@ public class MyTopic extends AppCompatActivity {
                     if(m.find() == true){
                         String quote = m.group(1);
 
-                        System.out.println(quote);
                         message.setText(HTMLSpirit.htmlDecode(quote));
                     }
 
@@ -94,7 +92,7 @@ public class MyTopic extends AppCompatActivity {
                     buttonUpdate.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            System.out.println("修改");
+
                             LoadingMyTopic.setVisibility(View.VISIBLE);
                             loadingText.setText("正在修改中……");
 
@@ -149,9 +147,9 @@ public class MyTopic extends AppCompatActivity {
             Url.getInstance().addParameter("disable_autowap", "1");
             Url.getInstance().addParameter("btnsubmit", "提交修改");
             Url.getInstance().addParameter("message", String.valueOf(message.getText()));
-            System.out.println(Url.getInstance().getParameter());
+
             String string = Url.getInstance().doPost();
-            System.out.print(string);
+
             Integer offset;
 
             offset = string.indexOf("<div class=\"tips_header\"><h1>提示信息</h1></div><div class=\"tips_content\">编辑完毕。");
@@ -176,7 +174,7 @@ public class MyTopic extends AppCompatActivity {
             Url.getInstance().setUrl(Config.POST_TOPICEDIT_URL+pid);
             Url.getInstance().addParameter("pid", String.valueOf(pid));
             string = Url.getInstance().doGet();
-            System.out.println(string);
+
             Integer offset;
 
             offset = string.indexOf("<a href=\"?action=searchpanel\">组合查询</a> <a href=\"?action=profilepanel\" style=\"background-color: #0F0\">登记资料</a>");
@@ -218,14 +216,14 @@ public class MyTopic extends AppCompatActivity {
 
         public void run(){
             //?action=submitmodify
-            System.out.println("删除");
+
             Url.getInstance().setUrl(Config.POST_TOPIC_MODIFY_URL);
             Url.getInstance().addParameter("fid","1");
             Url.getInstance().addParameter("pid", pid);
             Url.getInstance().addParameter("btndelete", "删除回复");
-            System.out.println(Url.getInstance().getParameter());
+
             String string = Url.getInstance().doPost();
-            System.out.print(string);
+
             Integer offset;
 
             offset = string.indexOf("<div class=\"tips_header\"><h1>提示信息</h1></div><div class=\"tips_content\">您的回复已经成功删除。<p>");
@@ -254,7 +252,6 @@ public class MyTopic extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                System.out.println("已经删除");
                 LoadingMyTopic.setVisibility(View.VISIBLE);
                 loadingText.setText("正在删除中……");
 

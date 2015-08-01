@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-import com.tantanwen.mopisdie.adapter.ForumAdapter;
 import com.tantanwen.mopisdie.adapter.PmAdapter;
 import com.tantanwen.mopisdie.adapter.PmContainer;
 import com.tantanwen.mopisdie.http.Url;
