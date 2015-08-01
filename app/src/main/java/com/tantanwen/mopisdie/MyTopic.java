@@ -108,6 +108,9 @@ public class MyTopic extends AppCompatActivity {
 
                     loadingText.setText("登记资料……这种蛋痛的功能请转去开电脑来搞……");
                     break;
+                case Config.FAILURE_ANONYMOUS:
+                    loadingText.setText("这个人匿名了，你想照他的话去开电脑用道具吧。");
+                    break;
                 case Config.FAILURE:
 
                     loadingText.setText("加载失败了，你关掉吧。如果确认是你发的帖，关掉重开下，这破网站的网速相当慢。");
@@ -140,7 +143,6 @@ public class MyTopic extends AppCompatActivity {
 
         public void run(){
             //?action=submitmodify
-            System.out.println("修改");
             Url.getInstance().setUrl(Config.POST_TOPIC_MODIFY_URL);
             Url.getInstance().addParameter("fid","1");
             Url.getInstance().addParameter("pid", pid);
@@ -171,7 +173,6 @@ public class MyTopic extends AppCompatActivity {
     class MyThread implements Runnable{
 
         public void run(){
-            System.out.println("发送");
             Url.getInstance().setUrl(Config.POST_TOPICEDIT_URL+pid);
             Url.getInstance().addParameter("pid", String.valueOf(pid));
             string = Url.getInstance().doGet();
@@ -182,10 +183,15 @@ public class MyTopic extends AppCompatActivity {
             if(offset>0){
                 //发送失败
                 mHandler.obtainMessage(Config.FAILURE_REGIST_NOOPEN).sendToTarget();
-            }else if(string != "net_error") {
-                mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
             }else{
-                mHandler.obtainMessage(Config.FAILURE).sendToTarget();
+                //<td colspan="3">使用道具：</td>
+                offset = string.indexOf("<td colspan=\"3\">使用道具：</td>");
+                //if(string != "net_error") {
+                if(offset>0){
+                    mHandler.obtainMessage(Config.FAILURE_ANONYMOUS).sendToTarget();
+                }else{
+                    mHandler.obtainMessage(Config.FAILURE).sendToTarget();
+                }
             }
         }
     };

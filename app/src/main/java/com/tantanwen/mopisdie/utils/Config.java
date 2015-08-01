@@ -32,4 +32,5 @@ public class Config {
     public static final int FAILURE_NET_ERROR       = 1003;
     public static final int FAILURE_MESSAGE_EMPTY    = 1004;
     public static final int FAILURE_REGIST_NOOPEN    = 1005;    //未开发登记
+    public static final int FAILURE_ANONYMOUS       = 1006;    //未开发登记
 }

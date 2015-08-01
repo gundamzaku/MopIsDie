@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,8 +32,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.alibaba.fastjson.JSON;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
+import com.tantanwen.mopisdie.utils.FilesCache;
 import com.tantanwen.mopisdie.utils.HTMLSpirit;
 
 import java.util.Objects;
@@ -51,6 +56,8 @@ public class ViewTopic extends AppCompatActivity {
     private TextView tipReload;
     private ProgressBar refreshingReload;
     private DrawerLayout mDrawerLayout;
+    private NetworkInfo mWifi;
+    private FilesCache fileCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +66,29 @@ public class ViewTopic extends AppCompatActivity {
         setContentView(R.layout.activity_view_topic);
         Intent intent = getIntent();
         tid = intent.getStringExtra("tid");
-        System.out.println("到这个页面我的tid是："+tid);
         mContext = this;
+
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         initToolBar();
         initDrawer();
         webView = (WebView)findViewById(R.id.webView);
 
+        fileCache = new FilesCache(mContext);
+
+        fileCache.setFileName("viewtopic_"+tid+".cache");
+        string = fileCache.load();
+
+        if(string != null){
+            webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
+            webView.setVisibility(View.VISIBLE);
+        }else {
+            loadData();
+        }
+        setMenuList();
+    }
+    private void setMenuList(){
         ListView mMenuListView = (ListView) findViewById(R.id.menu_list);
         String[] mMenuTitles = getResources().getStringArray(R.array.array_left_menu_topic);
         mMenuListView.setAdapter(new ArrayAdapter<String>(this,
@@ -92,8 +115,6 @@ public class ViewTopic extends AppCompatActivity {
                 }
             }
         });
-
-        loadData();
     }
     private void loadData(){
         initReloadView();
@@ -148,7 +169,7 @@ public class ViewTopic extends AppCompatActivity {
             Matcher m;
 
             switch(msg.what) {
-                case 1001:
+                case Config.SUCCESS:
                     //System.out.println(string);
                     //启动正则，过滤数据
                     sp = mContext.getSharedPreferences("mop_config",MODE_PRIVATE);
@@ -195,7 +216,7 @@ public class ViewTopic extends AppCompatActivity {
                     //内部地址全加上跳转
                     string = string.replaceAll("<a href=\"attachments","<a href=\""+Config.HOST+"/attachments");
 
-                    if(loadImagesNoWifi != 1){
+                    if(loadImagesNoWifi != 1 && mWifi.isConnected() == false){
                         //批量将图片全部替换成url形式
                         //string = string.replaceAll("<img src=\"|\'([\\s\\S]*?)\"|'","11111111111");
                         /*
@@ -211,14 +232,18 @@ public class ViewTopic extends AppCompatActivity {
                         string = string.replaceAll("<img src=[\"|'](attachments|face)/(.*?)[\"|'](.*?)/>","<img src=\""+Config.HOST+"/$1/$2\"$3>");
                     }
                     string += "<script type=\"text/javascript\" src=\"file:///android_asset/init.js\"></script>";
-                    System.out.println(string);
+
+                    //将string写入文件
+                    fileCache.setStream(string);
+                    fileCache.save();
+
                     webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
                     //webView.loadUrl("javascript:alert(injectedObject.toString())");
                     //Log.d(Config.TAG,"结束");
                     webView.setVisibility(View.VISIBLE);
 
                     break;
-                case 2001:
+                case Config.SUCCESS_02:
                     //System.out.println(string);
                     //<script type="text/javascript">$('quot_message').value=''</script>
                     p = Pattern.compile("<script type=\"text/javascript\">\\$\\('quot_message'\\).value='([\\s\\S]*?)'</script>");

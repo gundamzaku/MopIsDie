@@ -26,4 +26,5 @@ dependencies {
     compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
     compile 'com.github.castorflex.smoothprogressbar:library-circular:1.1.0'
     compile 'com.android.support:support-v4:22.2.0'
+    compile files('libs/fastjson-1.2.6.jar')
 }

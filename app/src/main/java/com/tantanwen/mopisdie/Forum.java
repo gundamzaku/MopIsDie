@@ -23,13 +23,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.tantanwen.mopisdie.adapter.ForumAdapter;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
+import com.tantanwen.mopisdie.utils.FilesCache;
 import com.tantanwen.mopisdie.widget.ScrollListView;
 
+import org.json.JSONArray;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +54,8 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private DrawerLayout mDrawerLayout;
     private LinearLayout forumLayout;
     private Button button_reload;
+    private FilesCache fileCache;
+    private String stream;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +75,17 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
 
         setMenuList();
 
-        loadData(ScrollListView.LOADFIRST);
+        fileCache = new FilesCache(mContext);
+        fileCache.setFileName("forumStream.cache");
+        stream = fileCache.load();
+        //这个用法还真是奇怪。。不明确
+        strs = JSON.parseObject(stream, new TypeReference<ArrayList<String[]>>() {});
+        //在这里解开来
+        if(strs.size()>0){
+            loadDataCache();
+        }else {
+            loadData(ScrollListView.LOADFIRST);
+        }
     }
 
     private void setMenuList(){
@@ -159,6 +178,21 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         //httpRequest.setHeader("Cookie", "JSESSIONID=" + COOKIE);
     }
 
+    private void loadDataCache(){
+
+        dataItems.addAll(strs);
+        System.out.println("大小？"+dataItems.size());
+        adapter = new ForumAdapter(mContext);
+        adapter.setItems(dataItems);
+        forumList.setAdapter(adapter);
+        //设置刷新事件
+        forumList.setOnRefreshListener((ScrollListView.OnRefreshListener) mContext);
+        //设置加载事件
+        forumList.setOnLoadListener((ScrollListView.OnLoadListener) mContext);
+        forumList.setVisibility(View.VISIBLE);
+
+    }
+
     private void initToolBar(){
 
         toolbar = (Toolbar)findViewById(R.id.id_toolbar);
@@ -170,7 +204,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private void initDrawer(){
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
-
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open, R.string.close);
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);//设置监听器
@@ -207,7 +240,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private Handler mHandler = new Handler() {
         public void handleMessage (Message msg) {//此方法在ui线程运行
             switch(msg.what) {
-
                 case Config.SUCCESS:
 
                     //如果我是第一次加载或是刷新
@@ -226,7 +258,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
 
                     //清除
                     forumList.setVisibility(View.VISIBLE);
-
                     //LinearLayout forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
                     if(what == ScrollListView.REFRESH){
                         //刷新,先清空
@@ -237,7 +268,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         forumList.onLoadComplete();
                     }
 
-                    System.out.println("dataItems的长度"+dataItems.size());
                     //拿到数据
                     if(what!=ScrollListView.LOAD) {
                         adapter.setItems(dataItems);
@@ -251,7 +281,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         //设置加载事件
                         forumList.setOnLoadListener((ScrollListView.OnLoadListener) mContext);
                     }
-                    System.out.println("reloadHeader:"+reloadHeader);
                     if(reloadHeader!=null){
                         LinearLayout forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
                         forumLayout.removeView(reloadHeader);
@@ -263,8 +292,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                             (R.string.page_full), Toast.LENGTH_SHORT).show();
                     break;
                 case Config.FAILURE_NET_ERROR:
-
-                    forumList.onRefreshComplete();
+                     forumList.onRefreshComplete();
                     //加载失败，请重新尝试
                     initReloadView();
                     //init
@@ -323,19 +351,21 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             //Log.d(Config.TAG,string);
             if(string == "net_error"){
                 page = originalPage;    //如果之前分页有过变动，回归原始的page
-                Log.d(Config.TAG,"产生了网络问题，将重新加载");
                 mHandler.obtainMessage(Config.FAILURE_NET_ERROR).sendToTarget();
                 return;
             }
             //Pattern p = Pattern.compile("<a href=\"viewtopic.asp/?fid=1&tid=(.*?)\" title='(.*?)'>(.*?)></a><br />");
             Pattern p = Pattern.compile("<a href=\"viewtopic.asp\\?fid=1&tid=(.*?)\" title='(.*?)'>(.*?)</a><br />");
             Matcher m = p.matcher(string);
-            Log.d(Config.TAG,"开始加载");
             //Log.d(Config.TAG, String.valueOf(m));
             while (m.find()) {
                 strs.add(new String[]{m.group(1), m.group(3)});
             }
-            System.out.println("strs="+strs);
+            //用的是阿里的，序列化，存入文件
+            String strJson= JSON.toJSONString(strs);
+            fileCache.setStream(strJson);
+            fileCache.save();
+
             mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
             /*
             for (String s : strs){

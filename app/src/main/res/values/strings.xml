@@ -82,6 +82,6 @@
     <string name="send_failed">发送失败</string>
     <string name="delete_failed">删除失败</string>
     <string name="title_activity_my_topic">我的回复</string>
-    <string name="title_activity_search">Search</string>
     <!-- -->
+    <string name="title_activity_search">查询</string>
 </resources>

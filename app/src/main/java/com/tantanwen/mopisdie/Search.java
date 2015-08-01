@@ -1,19 +1,29 @@
 package com.tantanwen.mopisdie;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.tantanwen.mopisdie.module.SearchCondition;
+import com.tantanwen.mopisdie.adapter.ForumAdapter;
+import com.tantanwen.mopisdie.thread.SearchThread;
+import com.tantanwen.mopisdie.utils.Config;
+import com.tantanwen.mopisdie.widget.ScrollListView;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 public class Search extends AppCompatActivity {
 
@@ -23,21 +33,34 @@ public class Search extends AppCompatActivity {
     private Button buttonMyReply;
     private EditText keyword;
     private Spinner searchtype;
-    private SearchCondition search;
+    private SearchThread search;
+    private ArrayList strs;
+    private Context mContext;
+    private ListView forumList;
+    private LinearLayout smoothLayout;
+    private LinearLayout searchLayout;
+    private LinearLayout forumLayout;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
+        mContext = this;
+        initToolBar();
         //收取控件
+        forumList = (ListView)findViewById(R.id.forum_list);
+        forumLayout = (LinearLayout)findViewById(R.id.forum_layout);
+        smoothLayout = (LinearLayout)findViewById(R.id.smooth_layout);
+        searchLayout = (LinearLayout)findViewById(R.id.search_layout);
+
         buttonSearch = (Button)findViewById(R.id.button_search);
         buttonMySend = (Button)findViewById(R.id.button_my_send);
         buttonMyReply = (Button)findViewById(R.id.button_my_reply);
 
         keyword = (EditText)findViewById(R.id.keyword);
         searchtype = (Spinner)findViewById(R.id.searchtype);
-        search = new SearchCondition(mHandler);
+        search = new SearchThread(mHandler);
         //绑定查询
         bindSearch();
         //绑定自发
@@ -46,11 +69,18 @@ public class Search extends AppCompatActivity {
         bindMyReply();
     }
 
+    private void initToolBar(){
+
+        toolbar = (Toolbar)findViewById(R.id.id_toolbar);
+        toolbar.setTitle(R.string.title_activity_search);
+        setSupportActionBar(toolbar);
+    }
+
     private void bindSearch(){
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startSearch();
                 if (isLock == true){
                     Toast.makeText(getApplicationContext(), getResources().getString
                             (R.string.repeat_submit), Toast.LENGTH_SHORT).show();
@@ -75,7 +105,7 @@ public class Search extends AppCompatActivity {
         buttonMyReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startSearch();
                 if (isLock == true) {
                     Toast.makeText(getApplicationContext(), getResources().getString
                             (R.string.repeat_submit), Toast.LENGTH_SHORT).show();
@@ -93,7 +123,7 @@ public class Search extends AppCompatActivity {
         buttonMySend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startSearch();
                 if (isLock == true){
                     Toast.makeText(getApplicationContext(), getResources().getString
                             (R.string.repeat_submit), Toast.LENGTH_SHORT).show();
@@ -107,10 +137,43 @@ public class Search extends AppCompatActivity {
         });
     }
 
+    private void startSearch(){
+        //隐藏查询框
+        forumLayout.setVisibility(View.GONE);
+        searchLayout.setVisibility(View.GONE);
+        //显示进度条
+        smoothLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void endSearch(){
+        //隐藏查询框
+        forumLayout.setVisibility(View.VISIBLE);
+        searchLayout.setVisibility(View.VISIBLE);
+        //显示进度条
+        smoothLayout.setVisibility(View.GONE);
+    }
+
+
+    private ForumAdapter adapter;
     public Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {//此方法在ui线程运行
-            System.out.print("结束线程");
+            System.out.println("结束线程"+msg.what);
             search.unLockStatus();
+            switch (msg.what){
+                case Config.SUCCESS:
+                    strs = search.getData();//得到数据
+                    System.out.println(strs);
+                    if(adapter == null) {
+                        adapter = new ForumAdapter(mContext);
+                    }
+                    adapter.setItems(strs);
+                    forumList.setAdapter(adapter);
+                    //forumList.deferNotifyDataSetChanged();//重新加载数据
+                    break;
+                default:
+                    break;
+            }
+            endSearch();
         }
     };
 
