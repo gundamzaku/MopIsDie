@@ -1,5 +1,6 @@
 package com.tantanwen.mopisdie;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -41,10 +43,14 @@ public class Main extends AppCompatActivity {
     private String passwordText;
     private String deviceId;
     private Map cookies;
+    private int limitLoginTimes = 0;
+    private Thread td1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mContext = this;
         //有cookie就直接跳走。
         cookies = Url.getInstance().getCookieStore();
@@ -55,6 +61,7 @@ public class Main extends AppCompatActivity {
             if (sid.getValue().length() > 0 && fuc.getValue().length() > 0) {
                 //走一个
                 toForum();
+                return;
             }
         }
         //System.out.println(cookies.get("LeemZfsid"));//LeemZfsid//LeemZfuc
@@ -80,6 +87,10 @@ public class Main extends AppCompatActivity {
                     username.setText(usernameText);
                     password.setText(passwordText);
                     saveLogin.setChecked(true);
+                    if(limitLoginTimes == 0) {
+                        login();
+                        return;
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -93,6 +104,14 @@ public class Main extends AppCompatActivity {
                 login();
             }
         });
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        if(td1!=null){
+            td1.interrupt();
+        }
     }
 
     private void initToolBar(){
@@ -117,6 +136,8 @@ public class Main extends AppCompatActivity {
 
     private void login(){
 
+        limitLoginTimes = 1;
+
         if(username == null || username.getText().length() <=0){
             Toast.makeText(getApplicationContext(), getResources().getString
                     (R.string.empty_username), Toast.LENGTH_SHORT).show();
@@ -139,8 +160,9 @@ public class Main extends AppCompatActivity {
 
         //启动线程
         MyThread myThread = new MyThread();
-        Thread td1 = new Thread(myThread);
+        td1 = new Thread(myThread);
         td1.start();
+
     }
 
     private Handler mHandler = new Handler() {
@@ -165,6 +187,8 @@ public class Main extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), getResources().getString
                             (R.string.login_error), Toast.LENGTH_LONG).show();
                     break;
+                case Config.NOTHING:
+                    break;
             }
         }
     };
@@ -188,13 +212,20 @@ public class Main extends AppCompatActivity {
             Url.getInstance().addParameter("username", String.valueOf(username.getText()));
             Url.getInstance().addParameter("password", String.valueOf(password.getText()));
             String string = Url.getInstance().doPost();
-
+            if(td1.isInterrupted()){
+                mHandler.obtainMessage(Config.NOTHING).sendToTarget();
+                return;
+            }
             if(string == "net_error"){
                 mHandler.obtainMessage(Config.FAILURE_NET_ERROR).sendToTarget();
                 return;
             }
             int position;
             position = string.indexOf("type=\"text/javascript\">top.location.href='index.asp';</script>");
+            if(td1.isInterrupted()){
+                mHandler.obtainMessage(Config.NOTHING).sendToTarget();
+                return;
+            }
             if(position>0) {
 
                 //设置CookieStore

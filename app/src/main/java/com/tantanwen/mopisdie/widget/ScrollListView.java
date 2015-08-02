@@ -226,7 +226,13 @@ public class ScrollListView extends ListView implements OnScrollListener {
             case PULL:
                 //向下拉
                 topPadding(topPadding);
-                if (scrollState == SCROLL_STATE_TOUCH_SCROLL && space > headerContentHeight + SPACE) {
+                //SCROLL_STATE_TOUCH_SCROLL，正在滚动
+                if (scrollState == SCROLL_STATE_TOUCH_SCROLL && space > headerContentHeight + SPACE && firstVisibleItem==0) {
+                    System.out.println("firstVisibleItem:"+firstVisibleItem);
+                    System.out.println("scrollState:"+scrollState);
+                    System.out.println("SCROLL_STATE_TOUCH_SCROLL:"+SCROLL_STATE_TOUCH_SCROLL);
+                    System.out.println("space:"+space);
+                    System.out.println("headerContentHeight:"+headerContentHeight);
                     state = RELEASE;
                     refreshHeaderViewByState();
                 }
@@ -275,7 +281,7 @@ public class ScrollListView extends ListView implements OnScrollListener {
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: //抬起
-                Log.d(Config.TAG,"抬起来了："+state);
+                //Log.d(Config.TAG,"抬起来了："+state);
                 if (state == PULL) {
                     //PULL的意思就是抬起来了，但是没达到加载的标准
                     state = NONE;
@@ -293,9 +299,11 @@ public class ScrollListView extends ListView implements OnScrollListener {
                     refreshFooterViewByState();
                     onLoad();
                 }
+                startY = 0;
                 isRecorded = false;
                 isFristMove = true;
                 break;
+
             case MotionEvent.ACTION_MOVE:   //移动
                 //Log.d(Config.TAG,"开始移动");
                 if(isFristMove == true){

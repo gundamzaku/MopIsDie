@@ -60,6 +60,7 @@ public class ViewTopic extends AppCompatActivity {
     private FilesCache fileCache;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -81,13 +82,13 @@ public class ViewTopic extends AppCompatActivity {
         string = fileCache.load();
 
         if(string != null){
-            webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
-            webView.setVisibility(View.VISIBLE);
+            showWeb();
         }else {
             loadData();
         }
         setMenuList();
     }
+
     private void setMenuList(){
         ListView mMenuListView = (ListView) findViewById(R.id.menu_list);
         String[] mMenuTitles = getResources().getStringArray(R.array.array_left_menu_topic);
@@ -162,11 +163,12 @@ public class ViewTopic extends AppCompatActivity {
     }
     private SharedPreferences sp;
     private Handler mHandler = new Handler() {
-        @JavascriptInterface
+
         public void handleMessage (Message msg) {//此方法在ui线程运行
 
             Pattern p;
             Matcher m;
+            boolean dontWriteFile = false;
 
             switch(msg.what) {
                 case Config.SUCCESS:
@@ -197,6 +199,7 @@ public class ViewTopic extends AppCompatActivity {
                             string = "<link rel=\"stylesheet\" href=\"file:///android_asset/common.css\" type=\"text/css\" />"+m.group(1);
                         }else{
                             string = "出现了意外";
+                            dontWriteFile = true;
                         }
                     }
                     //return shows3
@@ -205,12 +208,6 @@ public class ViewTopic extends AppCompatActivity {
                     //string = string.replaceAll("return shows3","return injectedObject.shows3");
                     string = string.replaceAll("return shows","return injectedObject.shows");
                     string = string.replaceAll("onclick=\"showquot","onclick=\"injectedObject.showquot");
-
-                    webView.setBackgroundColor(0); // 设置背景色
-                    webView.getSettings().setJavaScriptEnabled(true);
-                    //webView.requestFocus(View.FOCUS_DOWN);
-
-                    webView.addJavascriptInterface(new JsObject(), "injectedObject");
 
                     //内部地址全加上跳转
                     string = string.replaceAll("<a href=\"attachments","<a href=\""+Config.HOST+"/attachments");
@@ -233,13 +230,11 @@ public class ViewTopic extends AppCompatActivity {
                     string += "<script type=\"text/javascript\" src=\"file:///android_asset/init.js\"></script>";
 
                     //将string写入文件
-                    fileCache.setStream(string);
-                    fileCache.save();
-
-                    webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
-                    //webView.loadUrl("javascript:alert(injectedObject.toString())");
-                    //Log.d(Config.TAG,"结束");
-                    webView.setVisibility(View.VISIBLE);
+                    if(dontWriteFile == false) {
+                        fileCache.setStream(string);
+                        fileCache.save();
+                    }
+                    showWeb();
 
                     break;
                 case Config.SUCCESS_02:
@@ -259,7 +254,15 @@ public class ViewTopic extends AppCompatActivity {
             }
         }
     };
+    @JavascriptInterface
+    private void showWeb(){
 
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(new JsObject(), "injectedObject");
+        webView.setBackgroundColor(0); // 设置背景色
+        webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
+        webView.setVisibility(View.VISIBLE);
+    }
     class JsObject {
         @JavascriptInterface
         public boolean shows3(String pid) {

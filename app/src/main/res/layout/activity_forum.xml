@@ -17,8 +17,7 @@
             android:id="@+id/forum_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="#fff">
+            android:orientation="vertical">
             <com.tantanwen.mopisdie.widget.ScrollListView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

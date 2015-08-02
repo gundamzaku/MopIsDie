@@ -28,6 +28,7 @@ public class Config {
     public static final int SUCCESS_02              = 2001;
     public static final int SUCCESS_FULL_PAGE     = 2002;
     public static final int FAILURE                 = 9999;
+    public static final int NOTHING                 = 9998;
     public static final int FAILURE_LOGIN_INFO      = 1002;
     public static final int FAILURE_NET_ERROR       = 1003;
     public static final int FAILURE_MESSAGE_EMPTY    = 1004;

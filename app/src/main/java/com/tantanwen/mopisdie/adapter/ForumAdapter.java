@@ -62,7 +62,7 @@ public class ForumAdapter extends BaseAdapter {
         title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println(items.get(position)[0]);
+
                 if(items.get(position)[0] == null){
                     return;
                 }

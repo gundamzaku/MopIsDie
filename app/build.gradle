@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.tantanwen.mopisdie"
-        minSdkVersion 22
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -22,9 +22,11 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.2.0'
+    //compile 'com.android.support:appcompat-v7:19.+'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
     compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
     compile 'com.github.castorflex.smoothprogressbar:library-circular:1.1.0'
     compile 'com.android.support:support-v4:22.2.0'
+    //compile 'com.android.support:support-v4:19.+'
     compile files('libs/fastjson-1.2.6.jar')
 }

@@ -2,8 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/repeat_bg"
-    android:tileMode="repeat"
+    android:background="#FFFFFF"
     android:baselineAligned="false">
 
     <include android:id="@+id/id_toolbar" layout="@layout/inc_toolbar" />

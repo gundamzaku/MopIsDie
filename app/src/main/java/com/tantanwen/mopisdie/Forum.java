@@ -75,11 +75,21 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         fileCache.setFileName("forumStream.cache");
         stream = fileCache.load();
         //这个用法还真是奇怪。。不明确
-        strs = JSON.parseObject(stream, new TypeReference<ArrayList<String[]>>() {});
+        ArrayList<String[]> strsCahce = JSON.parseObject(stream, new TypeReference<ArrayList<String[]>>() {
+        });
         //在这里解开来
-        if(strs.size()>0){
+        int offset;
+        try {
+            offset = strsCahce.size();
+        }catch (Exception e){
+            offset = 0;
+        }
+
+        if(offset>0){
+            strs = strsCahce;
             loadDataCache();
         }else {
+            System.out.println("从onCreat来的");
             loadData(ScrollListView.LOADFIRST);
         }
     }
@@ -131,6 +141,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         */
                         break;
                     case 4:
+                        System.out.println("从侧栏来的");
                         loadData(ScrollListView.LOADFIRST);
                         initReloadView();
                         button_reload.setVisibility(View.GONE);
@@ -173,7 +184,8 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         isLoad = true;
 
         //启动线程
-        strs.clear();
+        if(strs!=null)strs.clear();
+
         this.what = what;
         MyThread myThread = new MyThread();
         Thread td1 = new Thread(myThread);
@@ -311,6 +323,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                             v.setVisibility(View.GONE);
                             tipReload.setText(R.string.start_reload);
                             refreshingReload.setVisibility(View.VISIBLE);
+                            System.out.println("从重新加载来的");
                             loadData(ScrollListView.LOADFIRST);
                         }
                     });
@@ -343,14 +356,13 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             Url.getInstance().setUrl(url);
             String string = Url.getInstance().doGet();
             //String string = "net_error";
-            Log.d(Config.TAG,"url is "+url);
             //Log.d(Config.TAG,"string is "+string);
 
             //if(page == 1) {
             //    string = "net_error";
             //    page++;
             //}
-            //Log.d(Config.TAG,string);
+
             if(string == "net_error"){
                 page = originalPage;    //如果之前分页有过变动，回归原始的page
                 mHandler.obtainMessage(Config.FAILURE_NET_ERROR).sendToTarget();
@@ -359,10 +371,11 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             //Pattern p = Pattern.compile("<a href=\"viewtopic.asp/?fid=1&tid=(.*?)\" title='(.*?)'>(.*?)></a><br />");
             Pattern p = Pattern.compile("<a href=\"viewtopic.asp\\?fid=1&tid=(.*?)\" title='(.*?)'>(.*?)</a><br />");
             Matcher m = p.matcher(string);
-            //Log.d(Config.TAG, String.valueOf(m));
+
             while (m.find()) {
                 strs.add(new String[]{m.group(1), m.group(3)});
             }
+
             //用的是阿里的，序列化，存入文件
             String strJson= JSON.toJSONString(strs);
             fileCache.setStream(strJson);
@@ -398,6 +411,11 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
 
         return super.onOptionsItemSelected(item);
     }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        //System.out.println("重新进来了");
+    }
 
     @Override
     public void onRefresh(){
@@ -406,6 +424,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
     @Override
     public void onLoad(){
+        System.out.println("从onLoad来的");
         loadData(ScrollListView.LOAD);
     }
 }
