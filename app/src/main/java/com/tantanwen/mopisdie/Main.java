@@ -175,7 +175,7 @@ public class Main extends AppCompatActivity {
 
     private Handler mHandler = new Handler() {
         public void handleMessage (Message msg) {//此方法在ui线程运行
-            msg.what = Config.FAILURE_NET_ERROR;
+            //msg.what = Config.FAILURE_NET_ERROR;
             switch(msg.what) {
                 case Config.SUCCESS:
                     toForum();
