@@ -37,7 +37,8 @@
             android:id="@+id/message"
             android:background="@drawable/bg_edittext"
             android:layout_gravity="center_horizontal"
-            android:minLines="8" />
+            android:minLines="8"
+            android:maxLines="14"/>
 
         <LinearLayout
             android:orientation="horizontal"
