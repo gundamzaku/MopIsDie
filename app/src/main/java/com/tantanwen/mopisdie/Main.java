@@ -52,19 +52,6 @@ public class Main extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mContext = this;
-        //有cookie就直接跳走。
-        cookies = Url.getInstance().getCookieStore();
-
-        Cookie sid = (Cookie) cookies.get("LeemZfsid");
-        Cookie fuc = (Cookie) cookies.get("LeemZfuc");
-        if(sid != null && fuc != null) {
-            if (sid.getValue().length() > 0 && fuc.getValue().length() > 0) {
-                //走一个
-                toForum();
-                return;
-            }
-        }
-        //System.out.println(cookies.get("LeemZfsid"));//LeemZfsid//LeemZfuc
 
         deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -73,9 +60,24 @@ public class Main extends AppCompatActivity {
         loginButton = (Button)findViewById(R.id.login_button);
         saveLogin = (CheckBox)findViewById(R.id.save_login);
 
+        initToolBar();
+
+        //绑定事件
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login();
+            }
+        });
+
         sp = getSharedPreferences("login_info",MODE_PRIVATE);
 
-        initToolBar();
+        if(!cookiesGo()) {
+            autoLogin();
+        }
+    }
+    private void autoLogin(){
+
         usernameText = sp.getString("username","");
         String passwordTextEncrypt = sp.getString("password","");
         if(usernameText.length()>0 && passwordTextEncrypt.length()>0){
@@ -89,23 +91,29 @@ public class Main extends AppCompatActivity {
                     saveLogin.setChecked(true);
                     if(limitLoginTimes == 0) {
                         login();
-                        return;
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
-        //绑定事件
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                login();
-            }
-        });
     }
+    private boolean cookiesGo(){
+        //有cookie就直接跳走。
+        cookies = Url.getInstance().getCookieStore();
 
+        Cookie sid = (Cookie) cookies.get("LeemZfsid");
+        Cookie fuc = (Cookie) cookies.get("LeemZfuc");
+        if(sid != null && fuc != null) {
+            if (sid.getValue().length() > 0 && fuc.getValue().length() > 0) {
+                //走一个
+                toForum();
+                return false;
+            }
+        }
+        return true;
+        //System.out.println(cookies.get("LeemZfsid"));//LeemZfsid//LeemZfuc
+    }
     @Override
     protected void onPause(){
         super.onPause();
@@ -167,7 +175,7 @@ public class Main extends AppCompatActivity {
 
     private Handler mHandler = new Handler() {
         public void handleMessage (Message msg) {//此方法在ui线程运行
-
+            msg.what = Config.FAILURE_NET_ERROR;
             switch(msg.what) {
                 case Config.SUCCESS:
                     toForum();

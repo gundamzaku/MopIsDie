@@ -51,6 +51,7 @@ public class MyTopic extends AppCompatActivity {
     }
 
     private void loadData(){
+
         message = (EditText)findViewById(R.id.message);
         buttonDelete = (Button)findViewById(R.id.button_delete);
         buttonUpdate = (Button)findViewById(R.id.button_update);
@@ -177,18 +178,23 @@ public class MyTopic extends AppCompatActivity {
 
             Integer offset;
 
-            offset = string.indexOf("<a href=\"?action=searchpanel\">组合查询</a> <a href=\"?action=profilepanel\" style=\"background-color: #0F0\">登记资料</a>");
-            if(offset>0){
-                //发送失败
-                mHandler.obtainMessage(Config.FAILURE_REGIST_NOOPEN).sendToTarget();
+            offset = string.indexOf("<form name=\"tmodify\" method=\"post\" action=\"?action=submitmodify\" onKeyDown=\"fastpost('btnsubmit', event);\">");
+            if(offset>0) {
+                mHandler.obtainMessage(Config.SUCCESS).sendToTarget();
             }else{
-                //<td colspan="3">使用道具：</td>
-                offset = string.indexOf("<td colspan=\"3\">使用道具：</td>");
-                //if(string != "net_error") {
-                if(offset>0){
-                    mHandler.obtainMessage(Config.FAILURE_ANONYMOUS).sendToTarget();
-                }else{
-                    mHandler.obtainMessage(Config.FAILURE).sendToTarget();
+                offset = string.indexOf("<a href=\"?action=searchpanel\">组合查询</a> <a href=\"?action=profilepanel\" style=\"background-color: #0F0\">登记资料</a>");
+                if (offset > 0) {
+                    //发送失败
+                    mHandler.obtainMessage(Config.FAILURE_REGIST_NOOPEN).sendToTarget();
+                } else {
+                    //<td colspan="3">使用道具：</td>
+                    offset = string.indexOf("<td colspan=\"3\">使用道具：</td>");
+                    //if(string != "net_error") {
+                    if (offset > 0) {
+                        mHandler.obtainMessage(Config.FAILURE_ANONYMOUS).sendToTarget();
+                    } else {
+                        mHandler.obtainMessage(Config.FAILURE).sendToTarget();
+                    }
                 }
             }
         }

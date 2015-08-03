@@ -89,7 +89,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             strs = strsCahce;
             loadDataCache();
         }else {
-            System.out.println("从onCreat来的");
             loadData(ScrollListView.LOADFIRST);
         }
     }
@@ -141,7 +140,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         */
                         break;
                     case 4:
-                        System.out.println("从侧栏来的");
                         loadData(ScrollListView.LOADFIRST);
                         initReloadView();
                         button_reload.setVisibility(View.GONE);
@@ -313,7 +311,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                     button_reload.setVisibility(View.VISIBLE);
                     tipReload.setText(R.string.page_load_failure);
                     refreshingReload.setVisibility(View.GONE);
-                    Log.d(Config.TAG,"进入重新加载页面");
                     button_reload.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -323,7 +320,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                             v.setVisibility(View.GONE);
                             tipReload.setText(R.string.start_reload);
                             refreshingReload.setVisibility(View.VISIBLE);
-                            System.out.println("从重新加载来的");
                             loadData(ScrollListView.LOADFIRST);
                         }
                     });
@@ -424,7 +420,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
     @Override
     public void onLoad(){
-        System.out.println("从onLoad来的");
         loadData(ScrollListView.LOAD);
     }
 }

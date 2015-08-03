@@ -228,11 +228,13 @@ public class ScrollListView extends ListView implements OnScrollListener {
                 topPadding(topPadding);
                 //SCROLL_STATE_TOUCH_SCROLL，正在滚动
                 if (scrollState == SCROLL_STATE_TOUCH_SCROLL && space > headerContentHeight + SPACE && firstVisibleItem==0) {
+                    /*
                     System.out.println("firstVisibleItem:"+firstVisibleItem);
                     System.out.println("scrollState:"+scrollState);
                     System.out.println("SCROLL_STATE_TOUCH_SCROLL:"+SCROLL_STATE_TOUCH_SCROLL);
                     System.out.println("space:"+space);
                     System.out.println("headerContentHeight:"+headerContentHeight);
+                    */
                     state = RELEASE;
                     refreshHeaderViewByState();
                 }
