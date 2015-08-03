@@ -45,6 +45,7 @@ public class Main extends AppCompatActivity {
     private Map cookies;
     private int limitLoginTimes = 0;
     private Thread td1;
+    private boolean autoLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +72,7 @@ public class Main extends AppCompatActivity {
         });
 
         sp = getSharedPreferences("login_info",MODE_PRIVATE);
-
-        if(!cookiesGo()) {
-            autoLogin();
-        }
-    }
-    private void autoLogin(){
-
-        usernameText = sp.getString("username","");
+        usernameText = sp.getString("username", "");
         String passwordTextEncrypt = sp.getString("password","");
         if(usernameText.length()>0 && passwordTextEncrypt.length()>0){
             //开始解密码密码
@@ -89,15 +83,19 @@ public class Main extends AppCompatActivity {
                     username.setText(usernameText);
                     password.setText(passwordText);
                     saveLogin.setChecked(true);
-                    if(limitLoginTimes == 0) {
-                        login();
-                    }
+                    autoLogin = true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        if(!cookiesGo()) {
+            if(autoLogin == true && limitLoginTimes == 0){
+                login();
+            }
+        }
     }
+
     private boolean cookiesGo(){
         //有cookie就直接跳走。
         cookies = Url.getInstance().getCookieStore();
@@ -108,10 +106,10 @@ public class Main extends AppCompatActivity {
             if (sid.getValue().length() > 0 && fuc.getValue().length() > 0) {
                 //走一个
                 toForum();
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
         //System.out.println(cookies.get("LeemZfsid"));//LeemZfsid//LeemZfuc
     }
     @Override
