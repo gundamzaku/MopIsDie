@@ -40,7 +40,7 @@
                 android:id="@+id/refreshing_reload"
                 style="@style/customProgressBar" />
             <TextView
-                android:text="如果一直处于加载中，请退出重试下，这网站有时候会抽风没办法。"
+                android:text="如果一直处于加载中，请退出重试下，网站有时候会很卡没办法。"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center" />
