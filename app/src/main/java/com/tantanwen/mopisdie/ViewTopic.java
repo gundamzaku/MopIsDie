@@ -309,6 +309,10 @@ public class ViewTopic extends AppCompatActivity {
            //Toast.makeText(getApplicationContext(), "引用", Toast.LENGTH_SHORT).show();
 
         }
+        @JavascriptInterface
+        public void adjustHeight(int height){
+            webViewCurrentHeight = height;
+        }
     }
 
     class MyThread implements Runnable{

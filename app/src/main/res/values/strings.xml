@@ -39,7 +39,7 @@
     <string-array name="array_left_menu_topic">
         <item id="1">回复</item>
         <item id="2">刷新</item>
-        <!--<item id="3">到底</item>-->
+        <item id="3">到底</item>
     </string-array>
     <string name="title_activity_reply">回帖</string>
     <string name="submit_button">提交</string>

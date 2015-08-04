@@ -47,4 +47,6 @@ function checkHref(){
 }
 window.onload=function(){
 	checkHref();
+	var height = document.body.scrollHeight;
+	injectedObject.adjustHeight(height);
 }
