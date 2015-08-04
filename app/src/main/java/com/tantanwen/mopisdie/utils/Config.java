@@ -21,6 +21,7 @@ public class Config {
     public static String SEARCH_URL = HOST+"/search.asp";
     public static String SEARCH_MYPOST_URL = HOST+"/membermisc.asp?action=myposts";
     public static String SEARCH_MYTOPIC_URL = HOST+"/membermisc.asp?action=mytopics";
+    public static String SEND_PM_URL = HOST+"/pm.asp?action=sendpost&r=mcp";
 
 
     //定义成功的操作符

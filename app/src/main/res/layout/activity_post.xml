@@ -42,6 +42,7 @@
             android:gravity="left|top"
             android:background="@drawable/bg_edittext"
             android:minLines="8"
+            android:maxLines="8"
             android:id="@+id/message" />
     </TableRow>
     <TableRow

@@ -32,7 +32,6 @@ public class SearchThread implements Runnable{
          */
 
         this.mHandler = mHandler;
-        System.out.println(Search.isLock);
     }
 
     public void setType(int type){
@@ -65,7 +64,6 @@ public class SearchThread implements Runnable{
         }else if(this.type == 3){   //自发
             Url.getInstance().setUrl(Config.SEARCH_MYTOPIC_URL);
         }
-        System.out.println(Url.getInstance().getParameter());
         string = Url.getInstance().doGet();
         Pattern p;  //声明
         Matcher m;

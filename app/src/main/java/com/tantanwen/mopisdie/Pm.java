@@ -1,6 +1,7 @@
 package com.tantanwen.mopisdie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -128,6 +129,13 @@ public class Pm extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_pm, menu);
+        int ct = menu.size();
+
+        for (int i = 0; i < ct; i++) {
+            MenuItem mi = menu.getItem(i);
+            mi.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            mi.setTitle(R.string.send_pm_message);
+        }
         return true;
     }
 
@@ -140,6 +148,9 @@ public class Pm extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            //转入发会传呼的页面
+            Intent list = new Intent(mContext,SendPm.class);
+            mContext.startActivity(list);
             return true;
         }
 
