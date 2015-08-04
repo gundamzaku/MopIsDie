@@ -79,6 +79,7 @@ public class HTMLSpirit{
         source = source.replace("&lt;", "<");
         source = source.replace("&gt;", ">");
         //System.out.println("这个是："+source);
+        source = source.replaceAll("<br>|<br />", "\n");
         return source;
     }
 }

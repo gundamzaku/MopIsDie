@@ -1,10 +1,8 @@
 package com.tantanwen.mopisdie;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -12,14 +10,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -32,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
-import com.alibaba.fastjson.JSON;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.FilesCache;
@@ -58,6 +52,7 @@ public class ViewTopic extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private NetworkInfo mWifi;
     private FilesCache fileCache;
+    private int webViewCurrentHeight = 0;
 
     @Override
 
@@ -110,6 +105,15 @@ public class ViewTopic extends AppCompatActivity {
                     case 1:
                         loadData();
                         mDrawerLayout.closeDrawers();
+                        break;
+                    case 2:
+                        if(webViewCurrentHeight>0) {
+                            //System.out.println(webView.getScrollY());
+                            webView.setScrollY(webViewCurrentHeight);
+                        }else {
+                            Toast.makeText(getApplicationContext(), getResources().getString
+                                    (R.string.webview_loading), Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     default:
                         break;
@@ -260,8 +264,19 @@ public class ViewTopic extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new JsObject(), "injectedObject");
         webView.setBackgroundColor(0); // 设置背景色
-        webView.loadDataWithBaseURL("",string, "text/html; charset=UTF-8", null,null);
+        /*
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                //System.out.println(webView.getHeight());
+                //System.out.println(webView.getMeasuredHeight());
+                webViewCurrentHeight = webView.getHeight();
+            }
+        });*/
+        webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", null, null);
         webView.setVisibility(View.VISIBLE);
+
+        //webView.setScrollY();
     }
     class JsObject {
         @JavascriptInterface

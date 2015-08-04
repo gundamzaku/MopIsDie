@@ -34,6 +34,7 @@ public class MyTopic extends AppCompatActivity {
     private Button buttonDelete;
     private Button buttonUpdate;
     private TextView loadingText;
+    private EditText title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class MyTopic extends AppCompatActivity {
     private void loadData(){
 
         message = (EditText)findViewById(R.id.message);
+        title = (EditText)findViewById(R.id.title);
         buttonDelete = (Button)findViewById(R.id.button_delete);
         buttonUpdate = (Button)findViewById(R.id.button_update);
         LoadingMyTopic = (LinearLayout)findViewById(R.id.loading_my_topic);
@@ -73,6 +75,15 @@ public class MyTopic extends AppCompatActivity {
 
             switch(msg.what) {
                 case Config.SUCCESS:
+                    //<input type="text" name="title" size="50" class="inputgrey" value="(*)" />
+                    p = Pattern.compile("<input type=\"text\" name=\"title\" size=\"50\" class=\"inputgrey\" value=\"([\\s\\S]*?)\" />");
+                    m = p.matcher(string);
+                    if(m.find() == true){
+                        String titleValue = m.group(1);
+                        title.setText(titleValue);
+                    }else {
+                        title.setVisibility(View.GONE);
+                    }
                     p = Pattern.compile("<input type=\"hidden\" id=\"message\" name=\"message\" value=\"([\\s\\S]*?)\" style=\"display:hidden\" />");
                     m = p.matcher(string);
                     if(m.find() == true){
@@ -112,7 +123,7 @@ public class MyTopic extends AppCompatActivity {
                     break;
                 case Config.FAILURE:
 
-                    loadingText.setText("加载失败了，你关掉吧。如果确认是你发的帖，关掉重开下，这破网站的网速相当慢。");
+                    loadingText.setText("加载失败了，请关掉吧。如果确认是你发的帖，关掉重开下，网站的网速有时候会比较慢。");
                     break;
                 default:
                     break;
@@ -143,14 +154,21 @@ public class MyTopic extends AppCompatActivity {
         public void run(){
             //?action=submitmodify
             Url.getInstance().setUrl(Config.POST_TOPIC_MODIFY_URL);
+            if(title.getText().length()>0){
+                Url.getInstance().addParameter("title", String.valueOf(title.getText()));
+            }
             Url.getInstance().addParameter("fid","1");
             Url.getInstance().addParameter("pid", pid);
             Url.getInstance().addParameter("disable_autowap", "1");
             Url.getInstance().addParameter("btnsubmit", "提交修改");
-            Url.getInstance().addParameter("message", String.valueOf(message.getText()));
+            String messageTrans = String.valueOf(message.getText());
+
+            //messageTrans = messageTrans.replaceAll("(\r\n|\r|\n|\n\r)", "<br>");
+            messageTrans = messageTrans.replaceAll("\n", "<br>");
+            Url.getInstance().addParameter("message", messageTrans);
 
             String string = Url.getInstance().doPost();
-
+            System.out.println(string);
             Integer offset;
 
             offset = string.indexOf("<div class=\"tips_header\"><h1>提示信息</h1></div><div class=\"tips_content\">编辑完毕。");
