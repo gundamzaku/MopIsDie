@@ -273,6 +273,7 @@ public class ViewTopic extends AppCompatActivity {
                 webViewCurrentHeight = webView.getHeight();
             }
         });*/
+        webView.getSettings().setDefaultTextEncodingName("UTF-8");
         webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", null, null);
         webView.setVisibility(View.VISIBLE);
 

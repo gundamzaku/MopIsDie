@@ -8,8 +8,8 @@
         android:title="呵…呵呵……呵呵呵呵呵">
         <CheckBoxPreference
             android:key="load_images_nowifi"
-            android:summary="是否充许在非WIFI状态下显示图片"
-            android:title="充许加载"
+            android:summary="是否允许在非WIFI状态下显示图片"
+            android:title="允许加载"
             android:checked="true"/>
     </PreferenceCategory>
     <!--

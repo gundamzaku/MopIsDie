@@ -80,7 +80,7 @@ public class MyTopic extends AppCompatActivity {
                     m = p.matcher(string);
                     if(m.find() == true){
                         String titleValue = m.group(1);
-                        title.setText(titleValue);
+                        title.setText(HTMLSpirit.htmlDecode(titleValue));
                     }else {
                         title.setVisibility(View.GONE);
                     }

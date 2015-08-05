@@ -6,8 +6,6 @@
     tools:context=".main"
     android:background="#FFFFFF">
 
-    <include android:id="@+id/id_toolbar" layout="@layout/inc_toolbar" />
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -76,12 +74,6 @@
         android:layout_gravity="left"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="6">
-        <ImageView
-            android:layout_width="220dp"
-            android:layout_height="match_parent"
-            android:id="@+id/imageView3"
-            android:src="@drawable/cun" />
-    </LinearLayout>
+        android:layout_weight="6"></LinearLayout>
 
 </LinearLayout>

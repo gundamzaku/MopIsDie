@@ -121,13 +121,13 @@ public class Main extends AppCompatActivity {
     }
 
     private void initToolBar(){
-
+        /*
         Toolbar toolbar = (Toolbar)findViewById(R.id.id_toolbar);
         toolbar.setTitle(R.string.app_slogan);
         setSupportActionBar(toolbar);
         //toolbar.setNavigationIcon(R.drawable.logo);
         toolbar.setLogo(R.drawable.ic_favorite_outline_white_24dp);
-
+        */
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         int width = metric.widthPixels;
