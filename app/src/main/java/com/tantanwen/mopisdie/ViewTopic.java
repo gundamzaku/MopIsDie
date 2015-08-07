@@ -274,7 +274,7 @@ public class ViewTopic extends AppCompatActivity {
             }
         });*/
         webView.getSettings().setDefaultTextEncodingName("UTF-8");
-        webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", null, null);
+        webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
         webView.setVisibility(View.VISIBLE);
 
         //webView.setScrollY();

@@ -7,8 +7,11 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.tantanwen.mopisdie.adapter.PmAdapter;
@@ -19,6 +22,7 @@ import com.tantanwen.mopisdie.utils.Config;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.Inflater;
 
 public class Pm extends AppCompatActivity {
 
@@ -26,6 +30,7 @@ public class Pm extends AppCompatActivity {
     private ArrayList<PmContainer> strs = new ArrayList<>();
     private ListView pmList;
     private Context mContext;
+    private LinearLayout lin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +38,14 @@ public class Pm extends AppCompatActivity {
         setContentView(R.layout.activity_pm);
         mContext = this;
         initToolBar();
+
+        //加载
+        lin = (LinearLayout) findViewById(R.id.layout_loading);
+
+        final LayoutInflater inflater = LayoutInflater.from(this);
+        LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.array_sending, null);
+        lin.addView(layout);
+        lin.setVisibility(View.VISIBLE);
 
         //启动线程
         MyThread myThread = new MyThread();
@@ -50,7 +63,8 @@ public class Pm extends AppCompatActivity {
         public void handleMessage (Message msg) {//此方法在ui线程运行
             switch(msg.what) {
                 case 1001:
-
+                    lin.removeAllViews();
+                    lin.setVisibility(View.GONE);
                     PmAdapter adapter = new PmAdapter(mContext);
                     adapter.setItems(strs);
 
@@ -97,11 +111,6 @@ public class Pm extends AppCompatActivity {
                 mc = p.matcher(m.group());
                 if(mc.find() == true){
 
-                    /*
-                    System.out.println(mc.group(1));
-                    System.out.println(mc.group(2));
-                    System.out.println(mc.group(3));
-                    */
                     pmContainer.setSendUserNick(mc.group(1));
                     pmContainer.setSendTime(mc.group(2));
                     pmContainer.setPmid(Integer.parseInt(mc.group(3)));
