@@ -3,6 +3,8 @@ package com.tantanwen.mopisdie;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -58,6 +60,17 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum);
         mContext = this;
+
+        PackageManager pp = this.getPackageManager();
+        PackageInfo pinfo = null;
+        try {
+            pinfo = pp.getPackageInfo("com.tantanwen.mopisdie",0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println(this.getPackageName());
+        System.out.println(pinfo.versionCode);
+        System.out.println(pinfo.versionName);
 
         initToolBar();
         initDrawer();
