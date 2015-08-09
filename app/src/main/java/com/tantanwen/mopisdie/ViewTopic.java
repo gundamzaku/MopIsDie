@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,7 +32,11 @@ import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.FilesCache;
 import com.tantanwen.mopisdie.utils.HTMLSpirit;
+import com.tantanwen.mopisdie.utils.Utils;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -166,6 +171,7 @@ public class ViewTopic extends AppCompatActivity {
         refreshingReload = (ProgressBar)reloadHeader.findViewById(R.id.refreshing_reload);
     }
     private SharedPreferences sp;
+    private String source;
     private Handler mHandler = new Handler() {
 
         public void handleMessage (Message msg) {//此方法在ui线程运行
@@ -195,12 +201,15 @@ public class ViewTopic extends AppCompatActivity {
                     m = p.matcher(string);
                     if(m.find() == true){
                         //"<style type=\"text/css\">a:link, a:visited { color: #000; text-decoration: none; }a:hover { background-color: #eff9d0; text-decoration: none; }</style>"
-                        string = "<link rel=\"stylesheet\" href=\"file:///android_asset/common.css\" type=\"text/css\" />"+m.group(1);//
+                        source = getHtmlSource("common","css");
+                        string = source+m.group(1);//
                     }else{
                         p = Pattern.compile("<table class=\"tipsborder\" cellSpacing=\"0\" cellPadding=\"0\" align=\"center\">([\\s\\S]*?)</table>");
                         m = p.matcher(string);
                         if(m.find() == true){
-                            string = "<link rel=\"stylesheet\" href=\"file:///android_asset/common.css\" type=\"text/css\" />"+m.group(1);
+                            source = getHtmlSource("common","css");
+                            string = source+m.group(1);
+                            //string = "<link rel=\"stylesheet\" href=\"file:///android_asset/common.css\" type=\"text/css\" />"+m.group(1);
                         }else{
                             string = "出现了意外";
                             dontWriteFile = true;
@@ -214,7 +223,7 @@ public class ViewTopic extends AppCompatActivity {
                     string = string.replaceAll("onclick=\"showquot","onclick=\"injectedObject.showquot");
 
                     //内部地址全加上跳转
-                    string = string.replaceAll("<a href=\"attachments","<a href=\""+Config.HOST+"/attachments");
+                    string = string.replaceAll("<a href=\"attachments", "<a href=\"" + Config.HOST + "/attachments");
 
                     if(loadImagesNoWifi != 1 && mWifi.isConnected() == false){
                         //批量将图片全部替换成url形式
@@ -231,7 +240,9 @@ public class ViewTopic extends AppCompatActivity {
                     }else{
                         string = string.replaceAll("<img src=[\"|'](attachments|face)/(.*?)[\"|'](.*?)/>","<img src=\""+Config.HOST+"/$1/$2\"$3>");
                     }
-                    string += "<script type=\"text/javascript\" src=\"file:///android_asset/init.js\"></script>";
+                    source = getHtmlSource("init","js");
+                    string += source;
+                    //string += "<script type=\"text/javascript\" src=\"file:///android_asset/init.js\"></script>";
 
                     //将string写入文件
                     if(dontWriteFile == false) {
@@ -273,12 +284,58 @@ public class ViewTopic extends AppCompatActivity {
                 webViewCurrentHeight = webView.getHeight();
             }
         });*/
+
         webView.getSettings().setDefaultTextEncodingName("UTF-8");
-        webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
+
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.KITKAT){
+            //webView.loadData(string, "text/html; charset=UTF-8", "UTF-8");
+            webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
+
+        }else{
+            webView.loadData(string, "text/html; charset=UTF-8", "UTF-8");
+        }
+        //webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
         webView.setVisibility(View.VISIBLE);
 
         //webView.setScrollY();
     }
+
+    private String getHtmlSource(String fileName,String postfix){
+
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.KITKAT){
+            if(postfix == "css") {
+                return "<link rel=\"stylesheet\" href=\"file:///android_asset/" + fileName + "." + postfix + "\" type=\"text/css\" />";
+            }
+            if(postfix == "js"){
+                return "<script type=\"text/javascript\" src=\"file:///android_asset/" + fileName + "." + postfix + "\"></script>";
+            }
+        }else{
+            if(postfix == "css") {
+                return "<style>"+readFromAssets(fileName+"."+postfix)+"</style>";
+            }
+            if(postfix == "js") {
+                return "<script>"+readFromAssets(fileName+"."+postfix)+"</script>";
+            }
+        }
+        return "";
+
+    }
+
+    /**
+     * 从assets中读取txt
+     */
+    private String readFromAssets(String fileName) {
+        try {
+            InputStream is = getAssets().open(fileName);
+            String text = Utils.readSourceFromSDcard(is);
+            return text;
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     class JsObject {
         @JavascriptInterface
         public boolean shows3(String pid) {
