@@ -34,9 +34,9 @@ import com.tantanwen.mopisdie.utils.FilesCache;
 import com.tantanwen.mopisdie.utils.HTMLSpirit;
 import com.tantanwen.mopisdie.utils.Utils;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -292,7 +292,13 @@ public class ViewTopic extends AppCompatActivity {
             webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
 
         }else{
-            webView.loadData(string, "text/html; charset=UTF-8", "UTF-8");
+            //webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            try {
+                webView.loadData(URLEncoder.encode(string, "utf-8"), "text/html; charset=UTF-8", "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
         }
         //webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
         webView.setVisibility(View.VISIBLE);

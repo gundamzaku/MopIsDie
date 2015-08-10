@@ -82,4 +82,35 @@ public class HTMLSpirit{
         source = source.replaceAll("<br>|<br />", "\n");
         return source;
     }
+
+    //这个是网上抄的。。
+    public static String webViewEncode(String source) {
+        if (source == null) {
+            return "";
+        }
+        String html = "";
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < source.length(); i++) {
+            char c = source.charAt(i);
+            switch (c) {
+                case '#':
+                    buffer.append("%23");
+                    break;
+                case '%':
+                    buffer.append("%25");
+                    break;
+                case '\\':
+                    buffer.append("%27");
+                    break;
+                case '?':
+                    buffer.append("%3f");
+                    break;
+                default:
+                    buffer.append(c);
+            }
+        }
+        html = buffer.toString();
+        return html;
+    }
+    //'#', '%', '\', '?' should be replaced by %23, %25, %27, %3f respectively.
 }
