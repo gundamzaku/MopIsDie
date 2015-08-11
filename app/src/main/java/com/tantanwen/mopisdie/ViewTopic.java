@@ -1,8 +1,10 @@
 package com.tantanwen.mopisdie;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -18,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.tantanwen.mopisdie.http.AndroidJavaScript;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.FilesCache;
@@ -35,12 +39,10 @@ import com.tantanwen.mopisdie.utils.HTMLSpirit;
 import com.tantanwen.mopisdie.utils.Utils;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+@SuppressLint("JavascriptInterface")
 public class ViewTopic extends AppCompatActivity {
 
     private String tid;
@@ -58,9 +60,10 @@ public class ViewTopic extends AppCompatActivity {
     private NetworkInfo mWifi;
     private FilesCache fileCache;
     private int webViewCurrentHeight = 0;
+    boolean dontWriteFile = false;
 
     @Override
-
+    @SuppressLint("SetJavaScriptEnabled")
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
@@ -75,6 +78,13 @@ public class ViewTopic extends AppCompatActivity {
         initToolBar();
         initDrawer();
         webView = (WebView)findViewById(R.id.webView);
+        /*
+        webView.getSettings().setJavaScriptEnabled(true);
+        //webView.addJavascriptInterface(new JsObject(), "injectedObject");
+
+        string = "<a onclick=\"Android.showquot('144919','1');\" class=\"bluelink\">回复</a>";
+        webView.loadDataWithBaseURL(null, string, "text/html", "UTF-8", null);
+        */
 
         fileCache = new FilesCache(mContext);
 
@@ -87,6 +97,7 @@ public class ViewTopic extends AppCompatActivity {
             loadData();
         }
         setMenuList();
+
     }
 
     private void setMenuList(){
@@ -178,7 +189,6 @@ public class ViewTopic extends AppCompatActivity {
 
             Pattern p;
             Matcher m;
-            boolean dontWriteFile = false;
 
             switch(msg.what) {
                 case Config.SUCCESS:
@@ -270,20 +280,29 @@ public class ViewTopic extends AppCompatActivity {
         }
     };
     @JavascriptInterface
+    @SuppressLint("SetJavaScriptEnabled")
     private void showWeb(){
 
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new JsObject(), "injectedObject");
+        webView.getSettings().setBuiltInZoomControls(true);
+
         webView.setBackgroundColor(0); // 设置背景色
-        /*
-        webView.setWebViewClient(new WebViewClient() {
+        WebViewClient webviewcilnt = new WebViewClient() {
+            @Override
+            public void onReceivedError(WebView view, int errorCode,String description, String failingUrl) {
+
+            }
+
             @Override
             public void onPageFinished(WebView view, String url) {
-                //System.out.println(webView.getHeight());
-                //System.out.println(webView.getMeasuredHeight());
-                webViewCurrentHeight = webView.getHeight();
+                super.onPageFinished(view, url);
             }
-        });*/
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+        };
+        webView.getSettings().setJavaScriptEnabled(true);
 
         webView.getSettings().setDefaultTextEncodingName("UTF-8");
 
@@ -292,14 +311,25 @@ public class ViewTopic extends AppCompatActivity {
             webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
 
         }else{
-            //webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
+            //webView.loadUrl("file:///"+fileCache.getFilesPath()+"/"+"viewtopic_"+tid+".html");
+            webView.loadDataWithBaseURL(null, string, "text/html", "UTF-8", null);
+            webView.setWebViewClient(webviewcilnt);
+            //string = "<a onclick=\"injectedObject.showquot('146124', '2');\" class=\"bluelink\">回复</a>";
+            //webView.loadData(string, "text/html; charset=UTF-8", "UTF-8");
+            /*
             try {
                 webView.loadData(URLEncoder.encode(string, "utf-8"), "text/html; charset=UTF-8", "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-            }
+            }*/
 
         }
+        //new AndroidJavaScript(this,new CpThread())
+        //在这里声明一个变量，把值全分配好再传走
+
+        webView.addJavascriptInterface(new AndroidJavaScript(this,new CpThread()), "injectedObject");
+        //webView.addJavascriptInterface(new JsObject(), "injectedObject");
         //webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
         webView.setVisibility(View.VISIBLE);
 
@@ -320,7 +350,7 @@ public class ViewTopic extends AppCompatActivity {
                 return "<style>"+readFromAssets(fileName+"."+postfix)+"</style>";
             }
             if(postfix == "js") {
-                return "<script>"+readFromAssets(fileName+"."+postfix)+"</script>";
+                //return "<script>"+readFromAssets(fileName+"."+postfix)+"</script>";
             }
         }
         return "";
@@ -361,7 +391,7 @@ public class ViewTopic extends AppCompatActivity {
         }
         @JavascriptInterface
         public void showquot(String pid,String f) {
-
+            System.out.println("ttttttt");
             fromJs_pid = pid;
             fromJs_f = f;
             //启动线程
@@ -391,11 +421,12 @@ public class ViewTopic extends AppCompatActivity {
         }
     };
 
-    class CpThread implements Runnable{
+    public class CpThread implements Runnable{
 
         public void run(){
 
             Url.getInstance().setUrl(Config.VIEW_TOPIC_CP_URL+"&pid="+fromJs_pid+"&f="+fromJs_f);
+            System.out.println(Config.VIEW_TOPIC_CP_URL+"&pid="+fromJs_pid+"&f="+fromJs_f);
             string = Url.getInstance().doGet();
             //需要解析是否是登录成功
             mHandler.obtainMessage(Config.SUCCESS_02).sendToTarget();

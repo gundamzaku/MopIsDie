@@ -3,6 +3,7 @@ package com.tantanwen.mopisdie.utils;
 import android.content.Context;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -58,6 +59,12 @@ public class FilesCache {
         }
     }
 
+    public String getFilesPath(){
+        File dir = mContext.getFilesDir();
+        //System.out.println("getAbsoluteFile:"+dir.getAbsoluteFile());
+        //System.out.println("getAbsolutePath:"+dir.getAbsolutePath());
+        return dir.getAbsolutePath();
+    }
     /*
      写入
      */
