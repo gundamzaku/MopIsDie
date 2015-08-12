@@ -1,28 +1,25 @@
 package com.tantanwen.mopisdie.http;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
 import com.tantanwen.mopisdie.MyTopic;
 import com.tantanwen.mopisdie.ViewTopic;
 
-import java.util.Objects;
-
 public class AndroidJavaScript {
 
-	private final ViewTopic.CpThread cpThread;
-	Context mContext;
-	private String fromJs_pid;
-	private String fromJs_f;
+	private ViewTopic.CpThread cpThread;
+	private Context mContext;
+	public int webViewCurrentHeight = 0;
 
-	public AndroidJavaScript(ViewTopic mContext, ViewTopic.CpThread cpThread) {
+	public AndroidJavaScript(Context mContext) {
 		this.mContext = mContext;
+
+	}
+
+	public void setCpThread(ViewTopic.CpThread cpThread){
 		this.cpThread = cpThread;
 	}
 
@@ -47,8 +44,11 @@ public class AndroidJavaScript {
 	@JavascriptInterface
 	public void showquot(String pid,String f) {
 
-		fromJs_pid = pid;
-		fromJs_f = f;
+		String fromJsPid = pid;
+		String fromJsF = f;
+		cpThread.setFromJsF(fromJsF);
+		cpThread.setFromJsPid(fromJsPid);
+
 		//启动线程
 		Thread td1 = new Thread(cpThread);
 		td1.start();
@@ -57,9 +57,13 @@ public class AndroidJavaScript {
 		//Toast.makeText(getApplicationContext(), "引用", Toast.LENGTH_SHORT).show();
 
 	}
-	/*
+
 	@JavascriptInterface
 	public void adjustHeight(int height){
 		webViewCurrentHeight = height;
-	}*/
+	}
+
+	public int getWebViewCurrentHeight(){
+		return webViewCurrentHeight;
+	}
 }

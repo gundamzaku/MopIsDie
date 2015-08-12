@@ -161,14 +161,12 @@ public class MyTopic extends AppCompatActivity {
             Url.getInstance().addParameter("pid", pid);
             Url.getInstance().addParameter("disable_autowap", "1");
             Url.getInstance().addParameter("btnsubmit", "提交修改");
-            String messageTrans = String.valueOf(message.getText());
-
             //messageTrans = messageTrans.replaceAll("(\r\n|\r|\n|\n\r)", "<br>");
-            messageTrans = messageTrans.replaceAll("\n", "<br>");
+            String messageTrans = HTMLSpirit.transMessage(String.valueOf(message.getText()));
             Url.getInstance().addParameter("message", messageTrans);
 
             String string = Url.getInstance().doPost();
-            System.out.println(string);
+            //System.out.println(string);
             Integer offset;
 
             offset = string.indexOf("<div class=\"tips_header\"><h1>提示信息</h1></div><div class=\"tips_content\">编辑完毕。");

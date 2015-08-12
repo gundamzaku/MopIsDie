@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
+import com.tantanwen.mopisdie.utils.HTMLSpirit;
 
 import java.io.IOException;
 
@@ -201,7 +202,9 @@ public class Post extends AppCompatActivity {
 
         Url.getInstance().addParameter("title", String.valueOf(title.getText()));
         Url.getInstance().addParameter("types", String.valueOf(types.getSelectedItemPosition()));
-        Url.getInstance().addParameter("message", String.valueOf(message.getText()));
+        String messageTrans = HTMLSpirit.transMessage(String.valueOf(message.getText()));
+        Url.getInstance().addParameter("message", messageTrans);
+        //Url.getInstance().addParameter("message", String.valueOf(message.getText()));
         Url.getInstance().addParameter("aboutlink", String.valueOf(aboutlink.getText()));
         Url.getInstance().addParameter("imglink", String.valueOf(imglink.getText()));
         Url.getInstance().addParameter("face1", String.valueOf(f[face1.getSelectedItemPosition()]));

@@ -61,6 +61,7 @@ public class ViewTopic extends AppCompatActivity {
     private FilesCache fileCache;
     private int webViewCurrentHeight = 0;
     boolean dontWriteFile = false;
+    private AndroidJavaScript androidJavascript;
 
     @Override
     @SuppressLint("SetJavaScriptEnabled")
@@ -77,6 +78,8 @@ public class ViewTopic extends AppCompatActivity {
 
         initToolBar();
         initDrawer();
+        androidJavascript = new AndroidJavaScript(this);
+
         webView = (WebView)findViewById(R.id.webView);
         /*
         webView.getSettings().setJavaScriptEnabled(true);
@@ -123,6 +126,7 @@ public class ViewTopic extends AppCompatActivity {
                         mDrawerLayout.closeDrawers();
                         break;
                     case 2:
+                        webViewCurrentHeight = androidJavascript.getWebViewCurrentHeight();
                         if(webViewCurrentHeight>0) {
                             //System.out.println(webView.getScrollY());
                             webView.setScrollY(webViewCurrentHeight);
@@ -327,8 +331,9 @@ public class ViewTopic extends AppCompatActivity {
         }
         //new AndroidJavaScript(this,new CpThread())
         //在这里声明一个变量，把值全分配好再传走
+        androidJavascript.setCpThread(new CpThread());
 
-        webView.addJavascriptInterface(new AndroidJavaScript(this,new CpThread()), "injectedObject");
+        webView.addJavascriptInterface(androidJavascript, "injectedObject");
         //webView.addJavascriptInterface(new JsObject(), "injectedObject");
         //webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);
         webView.setVisibility(View.VISIBLE);
@@ -350,7 +355,7 @@ public class ViewTopic extends AppCompatActivity {
                 return "<style>"+readFromAssets(fileName+"."+postfix)+"</style>";
             }
             if(postfix == "js") {
-                //return "<script>"+readFromAssets(fileName+"."+postfix)+"</script>";
+                return "<script>"+readFromAssets(fileName+"."+postfix)+"</script>";
             }
         }
         return "";
@@ -372,43 +377,6 @@ public class ViewTopic extends AppCompatActivity {
         return null;
     }
 
-    class JsObject {
-        @JavascriptInterface
-        public boolean shows3(String pid) {
-            //页面跳转，并把值带过去
-
-            Intent list = new Intent(mContext,MyTopic.class);
-            list.putExtra("pid",pid);
-            mContext.startActivity(list);
-            //Toast.makeText(getApplicationContext(), "这有啥好看的？看自己小鸡鸡去。", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        @JavascriptInterface
-        public boolean shows(Objects href) {
-
-            Toast.makeText(getApplicationContext(), "发送短消息", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        @JavascriptInterface
-        public void showquot(String pid,String f) {
-            System.out.println("ttttttt");
-            fromJs_pid = pid;
-            fromJs_f = f;
-            //启动线程
-            CpThread cpThread = new CpThread();
-            Thread td1 = new Thread(cpThread);
-            td1.start();
-            //组织成url
-            //http://fuyuncun.com/topiccp.asp?action=ajaxquot&pid=129518&f=1
-           //Toast.makeText(getApplicationContext(), "引用", Toast.LENGTH_SHORT).show();
-
-        }
-        @JavascriptInterface
-        public void adjustHeight(int height){
-            webViewCurrentHeight = height;
-        }
-    }
-
     class MyThread implements Runnable{
 
         public void run(){
@@ -423,10 +391,20 @@ public class ViewTopic extends AppCompatActivity {
 
     public class CpThread implements Runnable{
 
+        private String fromJsPid;
+        private String fromJsF;
+
+        public void setFromJsPid(String fromJsPid){
+            this.fromJsPid = fromJsPid;
+        }
+
+        public void setFromJsF(String fromJsF){
+            this.fromJsF = fromJsF;
+        }
+
         public void run(){
 
-            Url.getInstance().setUrl(Config.VIEW_TOPIC_CP_URL+"&pid="+fromJs_pid+"&f="+fromJs_f);
-            System.out.println(Config.VIEW_TOPIC_CP_URL+"&pid="+fromJs_pid+"&f="+fromJs_f);
+            Url.getInstance().setUrl(Config.VIEW_TOPIC_CP_URL + "&pid=" + fromJsPid + "&f=" + fromJsF);
             string = Url.getInstance().doGet();
             //需要解析是否是登录成功
             mHandler.obtainMessage(Config.SUCCESS_02).sendToTarget();

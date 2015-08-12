@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
+import com.tantanwen.mopisdie.utils.HTMLSpirit;
 
 import java.io.IOException;
 
@@ -211,7 +212,9 @@ public class Reply extends AppCompatActivity {
         Url.getInstance().setUrl(Config.POST_REPLY_URL);
         Url.getInstance().addParameter("tid", tid);
         Url.getInstance().addParameter("fid", "1");
-        Url.getInstance().addParameter("message", String.valueOf(message.getText()));
+        String messageTrans = HTMLSpirit.transMessage(String.valueOf(message.getText()));
+        Url.getInstance().addParameter("message", messageTrans);
+        //Url.getInstance().addParameter("message", String.valueOf(message.getText()));
         Url.getInstance().addParameter("aboutlink", String.valueOf(aboutlink.getText()));
         Url.getInstance().addParameter("imglink", String.valueOf(imglink.getText()));
         Url.getInstance().addParameter("face1", String.valueOf(f[face1.getSelectedItemPosition()]));

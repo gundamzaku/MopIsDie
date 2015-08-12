@@ -60,8 +60,6 @@ public class Main extends AppCompatActivity {
         password = (EditText)findViewById(R.id.password);
         loginButton = (Button)findViewById(R.id.login_button);
         saveLogin = (CheckBox)findViewById(R.id.save_login);
-        username.setText("Z钢弹");
-        password.setText("gundamzaku");
         initToolBar();
 
         //绑定事件

@@ -68,9 +68,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.println(this.getPackageName());
-        System.out.println(pinfo.versionCode);
-        System.out.println(pinfo.versionName);
 
         initToolBar();
         initDrawer();
