@@ -35,6 +35,7 @@
         <item id="5">刷新</item>
         <item id="6">注销</item>
         <item id="7">退出</item>
+        <item id="8">关于</item>
     </string-array>
     <string-array name="array_left_menu_topic">
         <item id="1">回复</item>
@@ -89,4 +90,5 @@
     <!-- -->
     <string name="title_activity_search">查询</string>
     <string name="title_activity_send_pm">SendPm</string>
+    <string name="title_activity_about">关于</string>
 </resources>

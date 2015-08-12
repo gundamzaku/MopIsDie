@@ -173,6 +173,10 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                     case 6:
                         finish();
                         break;
+                    case 7:
+                        list = new Intent(mContext,About.class);
+                        mContext.startActivity(list);
+                        break;
                     default:
                         break;
                 }
