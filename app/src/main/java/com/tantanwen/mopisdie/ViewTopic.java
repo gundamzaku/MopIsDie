@@ -36,6 +36,7 @@ import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.FilesCache;
 import com.tantanwen.mopisdie.utils.HTMLSpirit;
+import com.tantanwen.mopisdie.utils.Sp;
 import com.tantanwen.mopisdie.utils.Utils;
 
 import java.io.InputStream;
@@ -62,10 +63,14 @@ public class ViewTopic extends AppCompatActivity {
     private int webViewCurrentHeight = 0;
     boolean dontWriteFile = false;
     private AndroidJavaScript androidJavascript;
+    private Sp share;
 
     @Override
     @SuppressLint("SetJavaScriptEnabled")
     protected void onCreate(Bundle savedInstanceState) {
+
+        share = Sp.getInstance(this).getTable("mop_config");
+        share.setStyle();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_topic);
@@ -309,7 +314,9 @@ public class ViewTopic extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
 
         webView.getSettings().setDefaultTextEncodingName("UTF-8");
-
+        //不行，会乱的，要么改CSS样式
+        share.setWebViewStyle(webView);
+        //webView.getSettings().setDefaultFontSize(25);
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.KITKAT){
             //webView.loadData(string, "text/html; charset=UTF-8", "UTF-8");
             webView.loadDataWithBaseURL("", string, "text/html; charset=UTF-8", "UTF-8", null);

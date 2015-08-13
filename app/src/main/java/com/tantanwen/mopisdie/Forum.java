@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.AndroidCharacter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +33,7 @@ import com.tantanwen.mopisdie.adapter.ForumAdapter;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.FilesCache;
+import com.tantanwen.mopisdie.utils.Sp;
 import com.tantanwen.mopisdie.widget.ScrollListView;
 
 import java.util.ArrayList;
@@ -58,16 +60,11 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Sp.getInstance(this).getTable("mop_config").setStyle();
+
         setContentView(R.layout.activity_forum);
         mContext = this;
-
-        PackageManager pp = this.getPackageManager();
-        PackageInfo pinfo = null;
-        try {
-            pinfo = pp.getPackageInfo("com.tantanwen.mopisdie",0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
 
         initToolBar();
         initDrawer();

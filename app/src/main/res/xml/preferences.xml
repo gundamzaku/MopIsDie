@@ -11,17 +11,16 @@
             android:summary="是否允许在非WIFI状态下显示图片"
             android:title="允许加载"
             android:checked="true"/>
-        <!--
         <CheckBoxPreference
             android:key="refresh_force_forum"
             android:summary="是否使用缓存加载帖子列表（默认用户访问帖子列表时优先读取缓存而非实时刷新）"
-            android:title="不使用缓存"
-            android:checked="false"/>
+            android:title="使用缓存"
+            android:checked="true"/>
         <CheckBoxPreference
             android:key="refresh_force_viewtopic"
             android:summary="是否使用缓存加载帖子内容（默认用户访问帖子内容时优先读取缓存而非实时刷新）"
-            android:title="不使用缓存"
-            android:checked="false"/>
+            android:title="使用缓存"
+            android:checked="true"/>
         <ListPreference
             android:key="selected_font_style"
             android:title="字体大小"
@@ -29,7 +28,7 @@
             android:dialogTitle="选择字体大小"
             android:entries="@array/font_style"
             android:entryValues="@array/font_style_values"
-            android:defaultValue="0"/>-->
+            android:defaultValue="0"/>
     </PreferenceCategory>
     <!--
     <PreferenceCategory

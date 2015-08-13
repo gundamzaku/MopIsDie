@@ -1,4 +1,10 @@
 <resources>
+
+    <!--三种字体大小-->
+    <integer name="font_size_small">16</integer>
+    <integer name="font_size_medium">20</integer>
+    <integer name="font_size_big">24</integer>
+
     <string name="app_name">浮云村</string>
     <string name="app_slogan">全新的里屋</string>
     <string name="username">用户名</string>

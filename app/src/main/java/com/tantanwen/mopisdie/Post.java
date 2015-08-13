@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
 import com.tantanwen.mopisdie.utils.HTMLSpirit;
+import com.tantanwen.mopisdie.utils.Sp;
 
 import java.io.IOException;
 
@@ -51,7 +52,7 @@ public class Post extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        Sp.getInstance(this).getTable("mop_config").setStyle();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 

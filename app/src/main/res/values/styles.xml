@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -8,8 +7,17 @@
         <item name="colorAccent">@color/material_green_A200</item>
         <item name="android:actionMenuTextColor">@color/material_write</item>
         <item name="android:actionMenuTextAppearance">@style/MenuTextStyle</item>
+        <item name="android:textSize">16dp</item>
     </style>
     <style name="AppTheme" parent="@style/AppBaseTheme"></style>
+
+    <style name="AppTheme_medium" parent="@style/AppBaseTheme">
+        <item name="android:textSize">20dp</item>
+    </style>
+
+    <style name="AppTheme_big" parent="@style/AppBaseTheme">
+        <item name="android:textSize">24dp</item>
+    </style>
 
     <style name="MenuTextStyle">
         <item name="android:textSize">18sp</item>
