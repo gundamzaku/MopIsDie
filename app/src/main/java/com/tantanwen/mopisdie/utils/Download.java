@@ -93,9 +93,7 @@ public class Download {
         if (!file.exists()) {
             file.mkdirs();
             //创建文件夹
-            Log.d("log", "目录建了？"+sb.toString());
         }
-        Log.d("log", "目录存在了！");
         //获取文件全名
         sb.append(filename);
         file = new File(sb.toString());
