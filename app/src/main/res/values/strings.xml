@@ -97,4 +97,10 @@
     <string name="title_activity_search">查询</string>
     <string name="title_activity_send_pm">SendPm</string>
     <string name="title_activity_about">关于</string>
+
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="new_version_publish">有一个新的版本已经发布</string>
+    <string name="confirm_download">是否确认下载？</string>
+
 </resources>

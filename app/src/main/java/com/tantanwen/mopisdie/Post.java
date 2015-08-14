@@ -170,7 +170,7 @@ public class Post extends AppCompatActivity {
 
     private void notificationInit(){
         //通知栏内显示下载进度条
-        Intent intent=new Intent(this,Reply.class);//点击进度条，进入程序
+        //Intent intent=new Intent(this,Reply.class);//点击进度条，进入程序
         //PendingIntent pIntent=PendingIntent.getActivity(this, 0, intent, 0);
         RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.status_bar_message_topic);//通知栏中进度布局
         mNotificationManager=(NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);

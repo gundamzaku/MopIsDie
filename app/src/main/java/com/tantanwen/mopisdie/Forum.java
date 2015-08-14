@@ -1,6 +1,8 @@
 package com.tantanwen.mopisdie;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -8,8 +10,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.AndroidCharacter;
@@ -24,14 +28,17 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.tantanwen.mopisdie.adapter.ForumAdapter;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
+import com.tantanwen.mopisdie.utils.Download;
 import com.tantanwen.mopisdie.utils.FilesCache;
 import com.tantanwen.mopisdie.utils.Sp;
 import com.tantanwen.mopisdie.widget.ScrollListView;
@@ -56,6 +63,10 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private Button button_reload;
     private FilesCache fileCache;
     private String stream;
+    private String downloadUrl;
+    private NotificationManager mNotificationManager;
+    private NotificationCompat.Builder mBuilder;
+    private ProgressBar load;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +109,11 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         }else {
             loadData(ScrollListView.LOADFIRST);
         }
+
+        //检查版本丢线程出去，不影响主线程
+        CheckThread checkThread = new CheckThread();
+        Thread td1 = new Thread(checkThread);
+        td1.start();
     }
 
     private void setMenuList(){
@@ -108,8 +124,8 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         mMenuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(Config.TAG,"position="+position);
-                Log.d(Config.TAG,"isLoad="+isLoad);
+                //Log.d(Config.TAG,"position="+position);
+                //Log.d(Config.TAG,"isLoad="+isLoad);
                 if(position <=3){
                     if(isLoad == true){
                         Toast.makeText(getApplicationContext(), getResources().getString
@@ -253,6 +269,97 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         tipReload = (TextView)reloadHeader.findViewById(R.id.tip_reload);
         refreshingReload = (ProgressBar)reloadHeader.findViewById(R.id.refreshing_reload);
     }
+    private void monitorProgress(){
+        //mBuilder.build().contentView.setProgressBar(R.id.content_view_progress, 100, progress, false);
+        mNotificationManager.notify(0, mBuilder.build());
+    }
+
+    private int count = 0;
+    final Handler handlerDownload = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            //每一次就来1024个字节
+            count += msg.arg1;
+            //移除时要把整个事件停掉！
+            //这里就一条消息
+            //System.out.println(count);
+            mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, 1608704, count, false);
+            monitorProgress();
+            //if(count<100) handler.postDelayed(run, 200);
+            //200毫秒count加1
+
+            if(count>=1472648){
+                System.out.println("结束");
+            }
+        }
+    };
+
+
+    public void confrimDownload(){
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(mContext);  //先得到构造器
+        builder.setTitle(R.string.new_version_publish); //设置标题
+        builder.setMessage(R.string.confirm_download); //设置内容
+        builder.setIcon(R.mipmap.ic_launcher);//设置图标，图片id即可
+        builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() { //设置确定按钮
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //开始下载，转入后台
+                //新线程下载
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //新建一个下载
+                        System.out.println("新建一个下载");
+                        RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.status_bar_download);//通知栏中进度布局
+                        //load = (ProgressBar) findViewById(R.id.progressBar_download);
+                        mNotificationManager=(NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
+                        mBuilder = new NotificationCompat.Builder(Forum.this);
+                        mBuilder.setSmallIcon(R.drawable.send);
+                        mBuilder.setTicker("正在下载中……");
+                        mBuilder.setContentTitle("hello world");
+                        mBuilder.setContentText("no,you are stupid");
+                        mBuilder.setContent(remoteViews);
+                        /*
+                        Download load = new Download(downloadUrl);
+                        String value = load.downloadAsString();
+                        mHandler.obtainMessage(Config.SUCCESS_FULL_PAGE).sendToTarget();
+                        */
+                        Download l = new Download(downloadUrl);
+                        mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(),0, false);
+                        monitorProgress();
+                        //设置进度条，最大值 为100,当前值为0，最后一个参数为true时显示条纹
+
+                        System.out.println("得到长度");
+                        int status = l.down2sd("downtemp/", "1.ddd", l.new downhandler() {
+                            @Override
+                            public void setSize(int size) {
+                                Message msg = handlerDownload.obtainMessage();
+                                msg.arg1 = size;
+                                msg.sendToTarget();
+                                //Log.d("log", Integer.toString(size));
+                            }
+                        });
+                        //log输出
+                        Log.d("log", Integer.toString(status));
+
+                    }
+                }).start();
+
+                dialog.dismiss(); //关闭dialog
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() { //设置取消按钮
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        //参数都设置完成了，创建并显示出来
+        builder.create().show();
+    }
 
     private ForumAdapter adapter;
     private TextView tipReload;
@@ -335,6 +442,9 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
                         }
                     });
                     break;
+                case Config.SUCCESS_NEED_DOWNLOAD:
+                    confrimDownload();
+                    break;
                 default:
                     break;
             }
@@ -342,6 +452,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         }
 
     };
+
     class MyThread implements Runnable{
 
         public void run(){
@@ -396,7 +507,38 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             //<a href="viewtopic.asp?fid=1&tid=5406" title='【2015-7-7 10:35:09 猫晓扑】'>【法律相关】关于土地纠纷 (19/778)</a><br />
         }
     };
+    /*
+    检查下载点是否有数据
+     */
+    class CheckThread implements Runnable{
 
+        @Override
+        public void run() {
+            //得到我的当前版本
+            String url = Config.CHECK_VERSION_URL;
+            Url.getInstance().setUrl(url);
+            String string = Url.getInstance().doGet();
+            //解Json
+            JSONObject strsCahce = JSON.parseObject(string);
+            System.out.println(strsCahce.get("loadurl"));
+
+            PackageManager manager;
+            PackageInfo info = null;
+            manager = mContext.getPackageManager();
+            try {
+                info = manager.getPackageInfo(mContext.getPackageName(), 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            if(info.versionCode>Integer.valueOf(String.valueOf(strsCahce.get("version")))){
+                //有下载，需要用户确认
+                //需要回主线程
+                downloadUrl = String.valueOf(strsCahce.get("loadurl"));
+                mHandler.obtainMessage(Config.SUCCESS_NEED_DOWNLOAD).sendToTarget();
+            }
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
