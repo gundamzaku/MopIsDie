@@ -102,5 +102,7 @@
     <string name="cancel">取消</string>
     <string name="new_version_publish">有一个新的版本已经发布</string>
     <string name="confirm_download">是否确认下载？</string>
+    <string name="title_activity_file_down_load">FileDownLoad</string>
+
 
 </resources>

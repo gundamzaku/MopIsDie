@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_download"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#00000000"
@@ -7,7 +8,7 @@
     android:padding="5dp">
 
     <TextView
-        android:id="@+id/content_view_text1"
+        android:id="@+id/text_download"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="正在下载中"

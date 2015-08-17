@@ -1,6 +1,7 @@
 package com.tantanwen.mopisdie;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -275,6 +276,7 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     }
 
     private int count = 0;
+    Download l;
     final Handler handlerDownload = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -284,13 +286,21 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
             //移除时要把整个事件停掉！
             //这里就一条消息
             //System.out.println(count);
-            mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, 1608704, count, false);
+            mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(), count, false);
             monitorProgress();
             //if(count<100) handler.postDelayed(run, 200);
             //200毫秒count加1
+            TextView hello = (TextView)findViewById(R.id.hell);
+            System.out.println(hello);
 
-            if(count>=1472648){
-                System.out.println("结束");
+            if(count>=l.getLength()){
+                //System.out.println(count);
+                mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(), l.getLength(), false);
+                mBuilder.build().contentView.setTextViewText(R.id.text_download, "下载完成，点击打开。");
+                Intent i = l.openFile();
+                PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, 0);
+                mBuilder.setContentIntent(pendingIntent);
+                //mContext.startActivity(i);
             }
         }
     };
@@ -305,39 +315,47 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() { //设置确定按钮
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                //新建一个下载
+                System.out.println("新建一个下载");
+                RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.status_bar_download);//通知栏中进度布局
+                //load = (ProgressBar) findViewById(R.id.progressBar_download);
+                mNotificationManager=(NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
+                mBuilder = new NotificationCompat.Builder(Forum.this);
+                mBuilder.setSmallIcon(R.drawable.send);
+                mBuilder.setTicker("正在下载中……");
+                mBuilder.setOngoing(false);//意思是可不可以手动移除这个通知
+                mBuilder.setContentTitle("hello world");
+                mBuilder.setContentText("no,you are stupid");
+                mBuilder.setContent(remoteViews);
+
+                Intent i = new Intent(mContext, FileDownLoad.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, 0);
+
+                mBuilder.setContentIntent(pendingIntent);
+
+                //设置进度条，最大值 为100,当前值为0，最后一个参数为true时显示条纹
                 //开始下载，转入后台
                 //新线程下载
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        //新建一个下载
-                        System.out.println("新建一个下载");
-                        RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.status_bar_download);//通知栏中进度布局
-                        //load = (ProgressBar) findViewById(R.id.progressBar_download);
-                        mNotificationManager=(NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
-                        mBuilder = new NotificationCompat.Builder(Forum.this);
-                        mBuilder.setSmallIcon(R.drawable.send);
-                        mBuilder.setTicker("正在下载中……");
-                        mBuilder.setContentTitle("hello world");
-                        mBuilder.setContentText("no,you are stupid");
-                        mBuilder.setContent(remoteViews);
-                        /*
-                        Download load = new Download(downloadUrl);
-                        String value = load.downloadAsString();
-                        mHandler.obtainMessage(Config.SUCCESS_FULL_PAGE).sendToTarget();
-                        */
-                        Download l = new Download(downloadUrl);
-                        mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(),0, false);
+                        l = new Download(downloadUrl);
+                        mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(), 0, false);
                         monitorProgress();
-                        //设置进度条，最大值 为100,当前值为0，最后一个参数为true时显示条纹
+                        //System.out.println("得到长度");
 
-                        System.out.println("得到长度");
-                        int status = l.down2sd("downtemp/", "1.ddd", l.new downhandler() {
+                        int status = l.down2sd("mop_temp/", "mop.apk", l.new downhandler() {
+                            public int sizeAll;
+
                             @Override
                             public void setSize(int size) {
-                                Message msg = handlerDownload.obtainMessage();
-                                msg.arg1 = size;
-                                msg.sendToTarget();
+                                sizeAll +=size;
+                                if( sizeAll>102400 || size == 0) {
+                                    Message msg = handlerDownload.obtainMessage();
+                                    msg.arg1 = sizeAll;
+                                    msg.sendToTarget();
+                                    sizeAll = 0;
+                                }
                                 //Log.d("log", Integer.toString(size));
                             }
                         });

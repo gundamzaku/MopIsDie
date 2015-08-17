@@ -13,6 +13,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -30,6 +32,7 @@ public class Download {
      * http连接管理类
      */
     private HttpURLConnection urlcon;
+    private File file;
 
     public Download(String url) {
         this.urlstr = url;
@@ -65,7 +68,6 @@ public class Download {
         HttpURLConnection urlcon = null;
         try {
             url = new URL(urlstr);
-            System.out.println(url);
             urlcon = (HttpURLConnection) url.openConnection();
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,8 +90,7 @@ public class Download {
     public int down2sd(String dir, String filename, downhandler handler) {
 
         StringBuilder sb = new StringBuilder(sdcard).append(dir);
-        File file = new File(sb.toString());
-        System.out.println(sb.toString());
+        file = new File(sb.toString());
         if (!file.exists()) {
             file.mkdirs();
             //创建文件夹
@@ -110,6 +111,7 @@ public class Download {
                 //同步更新数据
                 handler.setSize(buf.length);
             }
+            handler.setSize(0);
             is.close();
         } catch (Exception e) {
             return 0;
@@ -123,10 +125,27 @@ public class Download {
         return 1;
     }
 
+    public int getSize(){
+        return this.getLength();
+    }
     /*
      * 内部回调接口类
      */
     public abstract class downhandler {
         public abstract void setSize(int size);
+    }
+
+    /*
+    把这个文件打开
+     */
+    public Intent openFile() {
+        // TODO Auto-generated method stub
+        Log.e("OpenFile", file.getName());
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(android.content.Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(file),
+                "application/vnd.android.package-archive");
+        return intent;
     }
 }
