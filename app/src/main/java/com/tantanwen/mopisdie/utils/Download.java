@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Timer;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -33,6 +34,7 @@ public class Download {
      */
     private HttpURLConnection urlcon;
     private File file;
+    private boolean stop = false;
 
     public Download(String url) {
         this.urlstr = url;
@@ -105,12 +107,20 @@ public class Download {
             //创建文件
             file.createNewFile();
             fos = new FileOutputStream(file);
+
             byte[] buf = new byte[1024];
-            while ((is.read(buf)) != -1) {
-                fos.write(buf);
+            int len = -1;
+            while ((len = is.read(buf)) != -1) {
+                if(stop == true){
+                    fos.close();
+                    is.close();
+                    return 1;
+                }
+                fos.write(buf,0,len);
                 //同步更新数据
                 handler.setSize(buf.length);
             }
+            fos.flush();
             handler.setSize(0);
             is.close();
         } catch (Exception e) {
@@ -147,5 +157,9 @@ public class Download {
         intent.setDataAndType(Uri.fromFile(file),
                 "application/vnd.android.package-archive");
         return intent;
+    }
+
+    public void stop(){
+        stop = true;
     }
 }

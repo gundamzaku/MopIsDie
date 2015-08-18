@@ -66,6 +66,18 @@
             android:name=".FileDownLoad"
             android:label="@string/title_activity_file_down_load" >
         </activity>
+
+        <service
+            android:name=".DownLoadService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+
+        <receiver
+            android:name=".receiver.DownLoadReceiver"
+            android:enabled="true"
+            android:exported="true" >
+        </receiver>
     </application>
 
 </manifest>

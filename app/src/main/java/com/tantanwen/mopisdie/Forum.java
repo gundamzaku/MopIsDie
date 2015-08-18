@@ -17,8 +17,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.AndroidCharacter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +27,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,9 +62,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
     private FilesCache fileCache;
     private String stream;
     private String downloadUrl;
-    private NotificationManager mNotificationManager;
-    private NotificationCompat.Builder mBuilder;
-    private ProgressBar load;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -270,41 +264,6 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         tipReload = (TextView)reloadHeader.findViewById(R.id.tip_reload);
         refreshingReload = (ProgressBar)reloadHeader.findViewById(R.id.refreshing_reload);
     }
-    private void monitorProgress(){
-        //mBuilder.build().contentView.setProgressBar(R.id.content_view_progress, 100, progress, false);
-        mNotificationManager.notify(0, mBuilder.build());
-    }
-
-    private int count = 0;
-    Download l;
-    final Handler handlerDownload = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            //每一次就来1024个字节
-            count += msg.arg1;
-            //移除时要把整个事件停掉！
-            //这里就一条消息
-            //System.out.println(count);
-            mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(), count, false);
-            monitorProgress();
-            //if(count<100) handler.postDelayed(run, 200);
-            //200毫秒count加1
-            TextView hello = (TextView)findViewById(R.id.hell);
-            System.out.println(hello);
-
-            if(count>=l.getLength()){
-                //System.out.println(count);
-                mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(), l.getLength(), false);
-                mBuilder.build().contentView.setTextViewText(R.id.text_download, "下载完成，点击打开。");
-                Intent i = l.openFile();
-                PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, 0);
-                mBuilder.setContentIntent(pendingIntent);
-                //mContext.startActivity(i);
-            }
-        }
-    };
-
 
     public void confrimDownload(){
 
@@ -315,56 +274,10 @@ public class Forum extends AppCompatActivity implements ScrollListView.OnRefresh
         builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() { //设置确定按钮
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //新建一个下载
-                System.out.println("新建一个下载");
-                RemoteViews remoteViews = new RemoteViews(getPackageName(),R.layout.status_bar_download);//通知栏中进度布局
-                //load = (ProgressBar) findViewById(R.id.progressBar_download);
-                mNotificationManager=(NotificationManager) mContext.getSystemService(NOTIFICATION_SERVICE);
-                mBuilder = new NotificationCompat.Builder(Forum.this);
-                mBuilder.setSmallIcon(R.drawable.send);
-                mBuilder.setTicker("正在下载中……");
-                mBuilder.setOngoing(false);//意思是可不可以手动移除这个通知
-                mBuilder.setContentTitle("hello world");
-                mBuilder.setContentText("no,you are stupid");
-                mBuilder.setContent(remoteViews);
 
-                Intent i = new Intent(mContext, FileDownLoad.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, 0);
-
-                mBuilder.setContentIntent(pendingIntent);
-
-                //设置进度条，最大值 为100,当前值为0，最后一个参数为true时显示条纹
-                //开始下载，转入后台
-                //新线程下载
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        l = new Download(downloadUrl);
-                        mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(), 0, false);
-                        monitorProgress();
-                        //System.out.println("得到长度");
-
-                        int status = l.down2sd("mop_temp/", "mop.apk", l.new downhandler() {
-                            public int sizeAll;
-
-                            @Override
-                            public void setSize(int size) {
-                                sizeAll +=size;
-                                if( sizeAll>102400 || size == 0) {
-                                    Message msg = handlerDownload.obtainMessage();
-                                    msg.arg1 = sizeAll;
-                                    msg.sendToTarget();
-                                    sizeAll = 0;
-                                }
-                                //Log.d("log", Integer.toString(size));
-                            }
-                        });
-                        //log输出
-                        Log.d("log", Integer.toString(status));
-
-                    }
-                }).start();
-
+                Intent intent=new Intent(mContext,DownLoadService.class);
+                intent.putExtra("downloadUrl",downloadUrl);
+                startService(intent);
                 dialog.dismiss(); //关闭dialog
             }
         });
