@@ -20,16 +20,16 @@ public class FileDownLoad extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_down_load);
 
-        Button downLoadStop = (Button)findViewById(R.id.download_stop);
+        final Button downLoadStop = (Button)findViewById(R.id.download_stop);
 
         downLoadStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("开始点击");
                 Intent myIntent = new Intent();//创建Intent对象
                 myIntent.setAction("com.tantanwen.mopisdie.DownLoadService");
                 myIntent.putExtra("cmd", DownLoadReceiver.CMD_STOP_SERVICE);
                 sendBroadcast(myIntent);//发送广播
+                downLoadStop.setText(R.string.have_cancel_download);
             }
         });
     }

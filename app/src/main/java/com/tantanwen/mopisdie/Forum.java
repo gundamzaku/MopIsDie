@@ -1,7 +1,5 @@
 package com.tantanwen.mopisdie;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -36,7 +33,6 @@ import com.alibaba.fastjson.TypeReference;
 import com.tantanwen.mopisdie.adapter.ForumAdapter;
 import com.tantanwen.mopisdie.http.Url;
 import com.tantanwen.mopisdie.utils.Config;
-import com.tantanwen.mopisdie.utils.Download;
 import com.tantanwen.mopisdie.utils.FilesCache;
 import com.tantanwen.mopisdie.utils.Sp;
 import com.tantanwen.mopisdie.widget.ScrollListView;

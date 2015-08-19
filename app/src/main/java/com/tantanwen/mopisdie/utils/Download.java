@@ -100,7 +100,9 @@ public class Download {
         //获取文件全名
         sb.append(filename);
         file = new File(sb.toString());
-
+        if(file.exists()) {
+            file.delete();
+        }
         FileOutputStream fos = null;
         try {
             InputStream is = urlcon.getInputStream();
@@ -108,17 +110,18 @@ public class Download {
             file.createNewFile();
             fos = new FileOutputStream(file);
 
-            byte[] buf = new byte[1024];
+            byte[] buf = new byte[1024*4];
             int len = -1;
             while ((len = is.read(buf)) != -1) {
+
                 if(stop == true){
                     fos.close();
                     is.close();
-                    return 1;
+                    return 2;
                 }
-                fos.write(buf,0,len);
+                fos.write(buf, 0, len);
                 //同步更新数据
-                handler.setSize(buf.length);
+                handler.setSize(len);
             }
             fos.flush();
             handler.setSize(0);

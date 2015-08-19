@@ -44,7 +44,6 @@ public class DownLoadService extends Service {
         mContext = this;
 
         //开启一个消息栏通知
-        System.out.println("新建一个下载");
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.status_bar_download);//通知栏中进度布局
         //load = (ProgressBar) findViewById(R.id.progressBar_download);
         mNotificationManager=(NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
@@ -86,14 +85,15 @@ public class DownLoadService extends Service {
                 monitorProgress();
                 intentThread = new Intent();//创建Intent对象
                 intentThread.setAction("com.tantanwen.mopisdie.FileDownLoad");
+                System.out.println("总长度"+l.getLength());
 
                 int status = l.down2sd("mop_temp/", "mop.apk", l.new downhandler() {
-                    public int sizeAll=0;
 
+                    public int sizeAll=0;
                     @Override
                     public void setSize(int size) {
                         sizeAll +=size;
-                        if( sizeAll>10240 || size == 0) {
+                        if( sizeAll>409600 || size == 0) {
                             Message msg = handlerDownload.obtainMessage();
                             msg.arg1 = sizeAll;
                             msg.sendToTarget();
@@ -101,10 +101,11 @@ public class DownLoadService extends Service {
                             sendBroadcast(intentThread);//发送广播
                             sizeAll = 0;
                         }
-                        //Log.d("log", Integer.toString(size));
+
                     }
                 });
-
+                //中断
+                if(status == 2)mNotificationManager.cancel(0);
             }
         }).start();
         return super.onStartCommand(intent, flags, startId);
@@ -112,7 +113,6 @@ public class DownLoadService extends Service {
 
 
     private void monitorProgress(){
-        //mBuilder.build().contentView.setProgressBar(R.id.content_view_progress, 100, progress, false);
         mNotificationManager.notify(0, mBuilder.build());
     }
 
@@ -122,20 +122,22 @@ public class DownLoadService extends Service {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            //每一次就来1024个字节
+            //每一次就来1024*4个字节
             count += msg.arg1;
             //移除时要把整个事件停掉！
             //这里就一条消息
             //System.out.println(count);
             mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(), count, false);
-            monitorProgress();
+
             //if(count<100) handler.postDelayed(run, 200);
             //200毫秒count加1
-            if(count>=l.getLength()  ){
+            if(count>=l.getLength()){
+
+                System.out.println("count长度"+count);
+
                 if(stop == false) {
-                    System.out.println(count);
                     mBuilder.build().contentView.setProgressBar(R.id.progressBar_download, l.getLength(), l.getLength(), false);
-                    mBuilder.build().contentView.setTextViewText(R.id.text_download, "下载完成，点击打开。");
+                    mBuilder.build().contentView.setTextViewText(R.id.text_download,getResources().getString(R.string.have_done_download));//
                     Intent i = l.openFile();
                     PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, 0);
                     mBuilder.setContentIntent(pendingIntent);
@@ -143,14 +145,15 @@ public class DownLoadService extends Service {
                     stop = true;
                 }
             }
+            monitorProgress();
         }
     };
 
     private class CommandReceiver extends BroadcastReceiver {//继承自BroadcastReceiver的子类
         @Override
         public void onReceive(Context context, Intent intent) {//重写onReceive方法
+
             int cmd = intent.getIntExtra("cmd", -1);//获取Extra信息
-            System.out.println("cmd is :"+cmd);
             if(cmd == DownLoadReceiver.CMD_STOP_SERVICE){//如果发来的消息是停止服务
                 flag = false;//停止线程
                 stopSelf();//停止服务
